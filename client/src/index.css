@@ -24,14 +24,28 @@
 @theme{
   --color-primary: var(--pri1);
   --color-primary-dark: var(--pri2);
+
   --color-secondary: var(--sec1);
   --color-secondary-dark: var(--sec2);
+
   --color-alt: var(--alt1);
   --color-alt-dark: var(--alt2);
   --color-alt-faded: var(--alt3);
+
   --color-cancel: var(--cancel);
-  --color-bg: var(--bg1);
-  --color-bg-light: var(--bg2);
+
+  --color-bg: var(--bg2);
+  --color-bg-light: var(--bg1);
   --color-bg-dark: var(--bg3);
   --color-bg-darker: var(--bg4);
+
+  --color-black: var(--black);
+  --color-white: var(--white);
+
+  --font-Manrope: "Manrope", sans-serif;
+  --font-Outfit: "Outfit", sans-serif;
+}
+
+body{
+  background-color: #2e2e2e;
 }
