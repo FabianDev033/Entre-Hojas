@@ -8,6 +8,7 @@ import {
 interface HeaderState {
   placeholder: string;
   showBackButton: boolean;
+  showShadow: boolean;
 }
 
 interface HeaderContextType {
@@ -22,6 +23,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
   const [header, setHeader] = useState({
     placeholder: "Search plants...",
     showBackButton: false,
+    showShadow: false,
   });
   const configureHeader = (newConfig: Partial<typeof header>) => {
     setHeader((prev) => ({ ...prev, ...newConfig }));
