@@ -28,8 +28,8 @@
   --color-secondary: var(--sec1);
   --color-secondary-dark: var(--sec2);
 
-  --color-alt: var(--alt1);
-  --color-alt-dark: var(--alt2);
+  --color-alt: var(--alt2);
+  --color-alt-dark: var(--alt1);
   --color-alt-faded: var(--alt3);
 
   --color-cancel: var(--cancel);
