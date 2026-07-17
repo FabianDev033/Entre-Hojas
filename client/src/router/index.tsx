@@ -18,6 +18,10 @@ export const router = createBrowserRouter([
         element: <Category />,
       },
       {
+        path: "/categories/Ofertas",
+        element: <ProductList family="Offers"/>,
+      },
+      {
         path: "/categories/Anturio",
         element: <ProductList family="Anturio"/>,
       },
@@ -34,12 +38,20 @@ export const router = createBrowserRouter([
         element: <ProductList family="Monstera"/>,
       },
       {
+        path: "/categories/Philodendro",
+        element: <ProductList family="Philodendro"/>,
+      },
+      {
         path: "/categories/Potus",
         element: <ProductList family="Potus"/>,
       },
       {
         path: "/categories/Singonio",
         element: <ProductList family="Singonio"/>,
+      },
+      {
+        path: "/categories/Todo",
+        element: <ProductList family="AllPlants"/>,
       }
     ],
   },

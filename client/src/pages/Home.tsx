@@ -1,16 +1,18 @@
 import {PromoPotus1, PromoIcon, SingonioIcon, PotusIcon, MonsteraIcon, CalatheaIcon, MarantaIcon, PhilodendroIcon, AnturioIcon} from "../assets/images";
 import {Truck, Card, Plant} from "../assets/icons";
 import {useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { useHeader } from "../contexts/HeaderContext";
+import { ProductList } from "../Components/categories";
 const categories = [
-  {name: "Ofertas", icon: PromoIcon},
-  {name: "Singonio", icon: SingonioIcon},
-  {name: "Potus", icon: PotusIcon},
-  {name: "Monstera", icon: MonsteraIcon},
-  {name: "Maranta", icon: MarantaIcon},
-  {name: "Calathea", icon: CalatheaIcon},
-  {name: "Philodendro", icon: PhilodendroIcon},
-  {name: "Anturio", icon: AnturioIcon},
+  {name: "Ofertas", icon: PromoIcon, path: "./categories/Ofertas"},
+  {name: "Singonio", icon: SingonioIcon, path: "/categories/Singonio"},
+  {name: "Potus", icon: PotusIcon, path: "/categories/Potus"},
+  {name: "Monstera", icon: MonsteraIcon, path: "/categories/Monstera"},
+  {name: "Maranta", icon: MarantaIcon, path: "/categories/Maranta"},
+  {name: "Calathea", icon: CalatheaIcon, path: "/categories/Calathea"},
+  {name: "Philodendro", icon: PhilodendroIcon, path: "/categories/Philodendro"},
+  {name: "Anturio", icon: AnturioIcon, path: "/categories/Anturio"},
 ]
 const features = [
   {name: "Envios a San Luis y Villa Mercedes", icon: Truck},
@@ -20,6 +22,7 @@ const features = [
 
 export default function Home() {
   const { configureHeader } = useHeader();
+  const navigate = useNavigate();
 
   useEffect(() => {
     configureHeader({
@@ -29,9 +32,14 @@ export default function Home() {
     });
   }, []);
 
+  const handleCategories = (path?: string) => {
+    if (path) {
+      navigate(path)
+    }
+  }
 
   return (
-    <main className="bg-bg-light h-[calc(100svh-3rem)] min-w-screen flex flex-col items-center  text-white">
+    <main className="bg-bg-light min-w-screen flex flex-col items-center  text-white">
       <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-63 w-screen absolute z-0"></div>
       <section className="flex z-10 w-[95%] h-65 bg-bg mt-2 rounded-md shadow-md">
         <div className="flex flex-col items-center justify-between w-[45%]">
@@ -51,7 +59,7 @@ export default function Home() {
       </section>
       <section className="flex overflow-scroll scrollbar-none  gap-7 w-screen h-fit p-2">
         {categories.map((category, index) => (
-          <div key={index} className="flex flex-col items-center gap-0">
+          <div key={index} className="flex flex-col items-center gap-0 cursor-pointer" onClick={()=>{handleCategories(category.path)}}>
             <img src={category.icon} alt={category.name} className="w-20 h-20 object-contain"/>
             <span className="text-sm font-Outfit text-black">{category.name}</span>
           </div>
@@ -65,6 +73,9 @@ export default function Home() {
               <span className="text-xs font-Manrope text-black w-20">{feature.name}</span>
           </div>
         ))}
+      </section>
+      <section className=" w-full">
+        <ProductList family="AllPlants" />
       </section>
     </main>
   );

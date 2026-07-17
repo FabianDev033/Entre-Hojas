@@ -15,15 +15,15 @@ export default function Category() {
   }, [])
 
   const categories = [
-    { name: "Ofertas", amount: 0 },
+    { name: "Ofertas", amount: 3, path: "/categories/Ofertas" },
     { name: "Anturio", amount: 1, path: "/categories/Anturio"  },
     { name: "Calathea", amount: 1, path: "/categories/Calathea"  },
     { name: "Maranta", amount: 2, path: "/categories/Maranta"  },
     { name: "Monstera", amount: 2, path: "/categories/Monstera"  },
-    { name: "Philodendro", amount: 0, },
+    { name: "Philodendro", amount: 0, path: "/categories/Philodendro"},
     { name: "Potus", amount: 5, path: "/categories/Potus" },
     { name: "Singonio", amount: 5, path: "/categories/Singonio" },
-    { name: "Todo", amount: 16 },
+    { name: "Todo", amount: 16, path: "/categories/Todo" },
   ]
 
   const handleCategories = (path?: string) => {
@@ -42,7 +42,7 @@ export default function Category() {
             onClick={() => handleCategories(category.path)}
           >
             <span className="text-3xl">{category.name}</span>
-            {category.amount > 0 && category.name !== "Todo" && (
+            {category.amount > 0 && (
               <span className="text-md text-black/80">{category.amount} variedades</span>
             )}
           </div>
