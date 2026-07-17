@@ -33,8 +33,8 @@ export default function Category() {
   }
 
   return (
-    <main className="bg-bg-light h-[calc(100svh-3rem)] min-w-screen flex flex-col items-center font-Outfit text-black">
-      <div className="w-full flex flex-col gap-6 mt-24">
+    <main className="bg-bg-light min-h-[calc(100svh-55px)] min-w-screen flex flex-col items-center font-Outfit text-black">
+      <div className="w-full flex flex-col gap-6 mt-24 pb-30">
         {categories.map((category, index) => (
           <div
             key={index}
