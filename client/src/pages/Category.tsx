@@ -15,20 +15,20 @@ export default function Category() {
   }, [])
 
   const categories = [
-    { name: "Ofertas", amount: 3, path: "/categories/Ofertas" },
-    { name: "Anturio", amount: 1, path: "/categories/Anturio"  },
-    { name: "Calathea", amount: 1, path: "/categories/Calathea"  },
-    { name: "Maranta", amount: 2, path: "/categories/Maranta"  },
-    { name: "Monstera", amount: 2, path: "/categories/Monstera"  },
-    { name: "Philodendro", amount: 0, path: "/categories/Philodendro"},
-    { name: "Potus", amount: 5, path: "/categories/Potus" },
-    { name: "Singonio", amount: 5, path: "/categories/Singonio" },
-    { name: "Todo", amount: 16, path: "/categories/Todo" },
+    { name: "Ofertas", amount: 3},
+    { name: "Anturio", amount: 1},
+    { name: "Calathea", amount: 1},
+    { name: "Maranta", amount: 2},
+    { name: "Monstera", amount: 2},
+    { name: "Philodendro", amount: 0},
+    { name: "Potus", amount: 5},
+    { name: "Singonio", amount: 5},
+    { name: "Todo", amount: 16},
   ]
 
-  const handleCategories = (path?: string) => {
-    if (path) {
-      navigate(path)
+  const handleNavigate = (name: string) => {
+    if (name) {
+      navigate(`/categories/${name}`)
     }
   }
 
@@ -39,7 +39,7 @@ export default function Category() {
           <div
             key={index}
             className="w-full px-2 flex justify-between items-center gap-2 border-b border-black cursor-pointer"
-            onClick={() => handleCategories(category.path)}
+            onClick={() => handleNavigate(category.name)}
           >
             <span className="text-3xl">{category.name}</span>
             {category.amount > 0 && (
