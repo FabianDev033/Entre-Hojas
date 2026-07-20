@@ -29,6 +29,8 @@ export default function Home() {
       placeholder: "Buscar Entre Hojas",
       showBackButton: false,
       showShadow: false,
+      showSearch: true,
+      showShare: false
     });
   }, []);
 
