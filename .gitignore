@@ -1,0 +1,40 @@
+#porsiacaso chat
+# Node modules
+node_modules/
+api/node_modules/
+client/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env files (importante)
+.env
+api/.env
+client/.env
+
+# Build / dist
+dist/
+api/dist/
+client/dist/
+
+# Vite
+client/.vite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# PNPM
+.pnpm-store/
+
+# TypeScript
+*.tsbuildinfo
