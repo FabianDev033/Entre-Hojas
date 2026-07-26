@@ -76,11 +76,11 @@ export default function ProductList({family}:{family?:string}) {
             className="w-full max-w-45 h-55 mb-3 relative bg-[linear-gradient(to_top,#F2EBE3_0%,#F2EBE3_25%,#D8CAB8_100%)] flex flex-col shadow-lg rounded-md cursor-pointer hover:shadow-2xl transition duration-300 ease-in-out">
               <LabelBadge label={plant.label} />
               {plant.image && <img src={Images[plant.image as keyof typeof Images]} alt={plant.name} className="z-0 max-h-9/12 object-contain" />}
-              <div className="absolute bottom-0 left-0 flex flex-col px-2 pb-1 text-shadow-xs font-light">
+              <div className="absolute bottom-0 left-0 flex flex-col px-2 pb-1 text-shadow-xs font-light w-full">
                 <span className="text-black font-Outfit text-lg">{plant.name}</span>
-                <div className="flex gap-1 items-center">
-                  <span className="text-black font-Manrope text-xl">$ {plant.price.toLocaleString("es-AR")}</span>
-                  <DiscountBadge discount={plant.discount} />
+                <div className="grid grid-cols-2 place-items-center w-full">
+                  <span className="text-black font-Manrope text-xl justify-self-start">${plant.price.toLocaleString("es-AR")}</span>
+                  <DiscountBadge discount={plant.discount} big={false} />
                 </div>
               </div>
             </div>

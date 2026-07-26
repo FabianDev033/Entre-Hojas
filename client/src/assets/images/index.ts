@@ -33,5 +33,7 @@ export {default as SingonioVariegado} from './singonio/SingonioVariegado.webp'
 export {default as SingonioMaria} from './singonio/SingonioMaria.webp'
 export {default as SingonioRosado} from './singonio/SingonioRosado.webp'
 
-
+export {default as MercadoPagoIcon} from './pagoIcons/mercadopago.webp';
+export {default as BnaIcon} from './pagoIcons/bna.webp';
+export {default as CashIcon} from './pagoIcons/cash.webp';
 

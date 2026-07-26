@@ -5,7 +5,7 @@ export default function LabelBadge({label}:{label:string}) {
   const labelPromo = () =>{
     return(
       <div className='flex w-fit px-2 h-5 justify-center items-center gap-1 bg-alt-dark rounded-r-sm'>
-        <Promo className="h-5 w-5 text-black shadow-lg"/>
+        <Promo className="h-3 w-3 text-black shadow-lg"/>
         <span className="text-white text-[.7rem] font-Manrope font-light">OFERTA</span>
       </div>
     )
