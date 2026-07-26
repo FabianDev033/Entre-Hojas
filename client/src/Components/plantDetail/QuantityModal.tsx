@@ -47,7 +47,7 @@ export default function QuantityModal(
   return (
     <article className='fixed top-0 h-screen w-screen z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end'>
       <div className='relative h-8/12 w-screen bg-bg-dark rounded-t-md' onClick={(e)=> e.stopPropagation()}>
-        <button className='absolute -top-8 right-2' onClick={onClose}>
+        <button className='absolute -top-8 right-2 cursor-pointer' onClick={onClose}>
           <Close className='text-bg'/>
         </button>
         <div className='pt-5 flex flex-col gap-6 h-full'>
@@ -64,7 +64,7 @@ export default function QuantityModal(
             </div>
           ):(
             <div className="flex flex-col gap-4  items-center w-11/12">
-              <span className="font-Manrope font-light text-lg self-start px-2">
+              <span className="font-Manrope font-normal text-black text-lg self-start px-2">
                 Escribi la cantidad deseada
               </span>
 
@@ -80,14 +80,14 @@ export default function QuantityModal(
               <div className="flex gap-5">
                 <button
                   onClick={() => setIsCustom(false)}
-                  className="flex-1 py-2 rounded-sm bg-primary-dark/35 text-primary-dark font-Manrope font-medium text-lg cursor-pointer"
+                  className="flex-1 py-2 rounded-sm bg-primary-dark/35 text-primary-dark font-Manrope font-medium text-lg cursor-pointer shadow-md"
                 >
                   Volver
                 </button>
 
                 <button
                   onClick={handleCustomConfirm}
-                  className="flex-1 py-2 rounded-sm w-35 bg-primary-dark text-bg-light font-Manrope font-normal text-lg cursor-pointer"
+                  className="flex-1 py-2 rounded-sm w-35 bg-primary-dark text-bg-light font-Manrope font-normal text-lg cursor-pointer shadow-md"
                 >
                   Confirmar
                 </button>
