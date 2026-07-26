@@ -1,5 +1,5 @@
 
-export default function DiscountBadge({ discount}: {discount: number}) {
+export default function DiscountBadge({ discount, big }: {discount: number, big: boolean}) {
   if (discount <= 0) return null;
 
   /**
@@ -11,10 +11,21 @@ export default function DiscountBadge({ discount}: {discount: number}) {
   */
 
   return (
-    <div className="flex gap-1">
-      <span className="w-fit px-1.5 py-1 bg-primary-dark text-sm leading-none text-white font-Outfit font-light rounded-xs text-shadow-none">
-        {discount}% OFF
-      </span>
-    </div>
+    <>
+      {big === true ? (
+        <div className="flex gap-1">
+          <span className="w-fit h-6 px-3 bg-primary-dark text-md flex items-center text-white font-Outfit font-light  text-shadow-none">
+            {discount}% OFF
+          </span>
+        </div>
+      ): (
+        <div className="flex gap-1 items-center justify-self-end">
+        <span className="w-fit px-2 h-5 bg-primary-dark text-xs text-white font-Outfit font-light">
+          {discount}% OFF
+        </span>
+      </div>
+      )}
+      
+    </>
   );
 }
