@@ -11,6 +11,8 @@ export default function Category() {
       placeholder: "Buscar Entre Hojas",
       showBackButton: true,
       showShadow: true,
+      showHeader: true,
+      showCartTitle: false,
     })
   }, [])
 
