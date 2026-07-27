@@ -9,8 +9,13 @@ export default function Header() {
   return (
       <div className={`${header.showHeader ? '' : 'hidden'} grid grid-cols-3 items-center pt-1 px-2 bg-primary w-screen h-12 ${header.showShadow ? 'shadow-md' : ''} z-10`}>
         {header.showBackButton ? (
-          <div className="flex justify-center items-center w-10 h-10 cursor-pointer" onClick={() => navigate(-1)}>
-            <Arrow className="w-14 h-14 cursor-pointer z-20" />
+          <div className="flex justify-start items-center gap-4 pl-2 h-10 cursor-pointer" onClick={() => navigate(-1)}>
+            <Arrow className="w-4 h-4 cursor-pointer z-20" />
+            {
+              header.showCartTitle? (
+                <div className="font-Outfit font-normal text-black text-lg">Carrito</div>
+              ):(<></>)
+            }
           </div>
         ) : (
           <img src={Logo} alt="Logo" className="w-10 h-10 cursor-pointer" onClick={() => navigate('/')} />
@@ -29,6 +34,11 @@ export default function Header() {
                 </div>
               </div>
             ):(
+              <></>
+            )
+          }
+          {
+            header.showSearchIcon?(
               <div className="col-start-3 w-18 h-8 justify-self-center flex justify-between items-center">
                 <Search className="w-5 h-5 z-20 cursor-pointer" />
                 {
@@ -37,8 +47,11 @@ export default function Header() {
                   ): null
                 }
               </div>
+            ):(
+              <></>
             )
           }
+          
       </div>
     
   );
