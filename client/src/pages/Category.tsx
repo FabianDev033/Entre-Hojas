@@ -13,6 +13,7 @@ export default function Category() {
       showShadow: true,
       showHeader: true,
       showCartTitle: false,
+      showCheckoutTitle: false,
     })
   }, [])
 

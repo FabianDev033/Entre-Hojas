@@ -49,7 +49,9 @@ export default function PlantDetail({id}:{id?:number}) {
         showSearch: false,
         showSearchIcon:true,
         showShare: true,
-        showHeader: false
+        showHeader: false,
+        showCartTitle: false,
+        showCheckoutTitle: false,
       })
     }, [])
 

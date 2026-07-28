@@ -64,6 +64,7 @@ export default function Cart() {
         showSearch: false,
         showSearchIcon: false,
         showCartTitle: true,
+        showCheckoutTitle: false,
      });
   }, [configureHeader]);
 

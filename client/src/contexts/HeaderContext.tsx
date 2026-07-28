@@ -15,6 +15,7 @@ interface HeaderState {
   showShare: boolean;
   showHeader: boolean;
   showCartTitle: boolean;
+  showCheckoutTitle: boolean;
 }
 
 interface HeaderContextType {
@@ -34,7 +35,8 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
     showSearchIcon: false,
     showShare: true,
     showHeader: true,
-    showCartTitle: false
+    showCartTitle: false,
+    showCheckoutTitle: false,
   });
   const configureHeader = useCallback((newConfig: Partial<HeaderState>) => {
     setHeader((prev) => ({ ...prev, ...newConfig }));
