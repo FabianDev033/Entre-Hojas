@@ -61,6 +61,9 @@ export default function ProductList({family}:{family?:string}) {
   const handleNavigate = (id:number) =>{
     id? navigate(`/detalle/${id}`) : null
   }
+  const calcPrice = (price: number, discount:number )=>{
+    return price - (price * (discount / 100))
+  }
 
   return (
     <main className="bg-bg-light flex flex-col items-center pt-4 min-h-[calc(100svh-60px)]">
@@ -79,8 +82,8 @@ export default function ProductList({family}:{family?:string}) {
               <div className="absolute bottom-0 left-0 flex flex-col px-2 pb-1 text-shadow-xs font-light w-full">
                 <span className="text-black font-Outfit text-lg">{plant.name}</span>
                 <div className="grid grid-cols-2 place-items-center w-full">
-                  <span className="text-black font-Manrope text-xl justify-self-start">${plant.price.toLocaleString("es-AR")}</span>
-                  <DiscountBadge discount={plant.discount} big={false} />
+                  <span className="text-black font-Manrope text-xl justify-self-start">${calcPrice(plant.price, plant.discount).toLocaleString("es-AR")}</span>
+                  <DiscountBadge discount={plant.discount} size={'mini'} />
                 </div>
               </div>
             </div>

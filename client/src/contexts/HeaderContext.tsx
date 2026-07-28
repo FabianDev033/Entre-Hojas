@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useState,
   type ReactNode,
@@ -10,8 +11,10 @@ interface HeaderState {
   showBackButton: boolean;
   showShadow: boolean;
   showSearch: boolean;
+  showSearchIcon: boolean;
   showShare: boolean;
-  showHeader: boolean
+  showHeader: boolean;
+  showCartTitle: boolean;
 }
 
 interface HeaderContextType {
@@ -27,13 +30,15 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
     placeholder: "Search plants...",
     showBackButton: false,
     showShadow: false,
-    showSearch: false,
+    showSearch: true,
+    showSearchIcon: false,
     showShare: true,
     showHeader: true,
+    showCartTitle: false
   });
-  const configureHeader = (newConfig: Partial<typeof header>) => {
+  const configureHeader = useCallback((newConfig: Partial<HeaderState>) => {
     setHeader((prev) => ({ ...prev, ...newConfig }));
-  }
+  }, []);
 
   return (
     <HeaderContext.Provider value={{ header, setHeader, configureHeader }}>

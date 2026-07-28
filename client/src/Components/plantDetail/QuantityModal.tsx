@@ -24,7 +24,6 @@ export default function QuantityModal(
     { label: "6 unidades", value: 6 },
     { label: "Más de 6 unidades", value: 0},
   ];
-  console.log(options)
 
   const handleSelectQuantity = (value: number) => {
     if (value === 0) {

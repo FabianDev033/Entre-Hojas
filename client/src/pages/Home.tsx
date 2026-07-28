@@ -32,6 +32,7 @@ export default function Home() {
       showSearch: true,
       showShare: false,
       showHeader: true,
+      showSearchIcon:false
     });
   }, []);
 

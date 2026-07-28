@@ -1,7 +1,10 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import {Header, Footer} from "../Components/common";
 import { ScrollToTop } from "../Components/mainLayout";
 export default function MainLayout() {
+  const location = useLocation();
+  const isCartPage = location.pathname === "/cart";
+
   return (
     <>
     <div className="flex min-h-svh flex-col">
@@ -11,7 +14,7 @@ export default function MainLayout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <Footer />
+      {!isCartPage && <Footer />}
     </div>
     </>
   );
