@@ -1,18 +1,58 @@
 import { Search, Arrow, Share } from "../../assets/icons";
 import { Logo } from "../../assets/images";
-import { useHeader } from "../../contexts/HeaderContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
+type HeaderConfig = {
+  showBackButton: boolean;
+  showShadow: boolean;
+  showSearch: boolean;
+  showSearchIcon: boolean;
+  showShare: boolean;
+  title?: "Carrito" | "Finaliza tu orden";
+};
+
+const defaultHeader: HeaderConfig = {
+  showBackButton: false,
+  showShadow: false,
+  showSearch: true,
+  showSearchIcon: false,
+  showShare: false,
+};
+
+function getHeaderConfig(pathname: string): HeaderConfig | null {
+  if (pathname.startsWith("/detalle/")) return null;
+
+  if (pathname === "/checkout") {
+    return { showBackButton: true, showShadow: true, showSearch: false, showSearchIcon: false, showShare: false, title: "Finaliza tu orden" };
+  }
+
+  if (pathname === "/cart") {
+    return { showBackButton: true, showShadow: false, showSearch: false, showSearchIcon: false, showShare: false, title: "Carrito" };
+  }
+
+  if (pathname === "/categories" || pathname.startsWith("/categories/")) {
+    return { ...defaultHeader, showBackButton: true, showShadow: true };
+  }
+
+  if (pathname.startsWith("/orden/")) {
+    return { showBackButton: true, showShadow: false, showSearch: false, showSearchIcon: false, showShare: false };
+  }
+
+  return defaultHeader;
+}
 
 export default function Header() {
-  const { header } = useHeader();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const header = getHeaderConfig(pathname);
 
-  const isCheckout = header.showCheckoutTitle;
+  if (!header) return null;
+
+  const isCheckout = header.title === "Finaliza tu orden";
 
   return (
     <div
       className={`
-        ${header.showHeader ? "" : "hidden"}
         ${
           isCheckout
             ? "flex items-center"
@@ -33,13 +73,13 @@ export default function Header() {
         >
           <Arrow className="w-4 h-4" />
 
-          {header.showCartTitle && (
+          {header.title === "Carrito" && (
             <div className="font-Outfit font-normal text-black text-lg">
               Carrito
             </div>
           )}
 
-          {header.showCheckoutTitle && (
+          {isCheckout && (
             <div className="font-Outfit font-normal text-black text-lg">
               Finaliza tu orden
             </div>
@@ -58,7 +98,7 @@ export default function Header() {
         <div className="justify-self-center flex justify-end items-center w-55 h-8 bg-bg-light rounded-md shadow-md">
           <input
             className="w-45 ml-2 text-[0.625rem] focus:outline-none"
-            placeholder={header.placeholder}
+            placeholder="Buscar Entre Hojas"
           />
           <div className="w-8 h-full bg-bg flex justify-center items-center rounded-r-md">
             <Search className="w-5 h-5" />

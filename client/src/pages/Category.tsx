@@ -1,21 +1,7 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useHeader } from '../contexts/HeaderContext'
 
 export default function Category() {
-  const { configureHeader } = useHeader()
   const navigate = useNavigate()
-
-  React.useEffect(() => {
-    configureHeader({
-      placeholder: "Buscar Entre Hojas",
-      showBackButton: true,
-      showShadow: true,
-      showHeader: true,
-      showCartTitle: false,
-      showCheckoutTitle: false,
-    })
-  }, [])
 
   const categories = [
     { name: "Ofertas", amount: 3},
