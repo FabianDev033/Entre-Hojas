@@ -5,9 +5,7 @@ import { HttpError } from "./utils/http-error.js";
 
 const app = express();
 
-app.use(cors({
-  origin: "*"
-}));
+app.use(cors());
 app.use(express.json());
 app.get("/health", (_request, response) => response.json({ status: "ok" }));
 app.use("/api", routes);

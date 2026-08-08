@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom"
-import { useHeader } from "../../contexts/HeaderContext";
 import * as Images from "../../assets/images"
 import { Search, Share, Arrow, Arrow2, AddCart, Check } from "../../assets/icons";
 import React from "react";
@@ -39,22 +38,7 @@ interface Plant {
 
 export default function PlantDetail({id}:{id?:number}) {
   const navigate = useNavigate();
-  const {configureHeader} = useHeader()
   const { addItem } = useCart();
-  React.useEffect(() => {
-      configureHeader({
-        placeholder: "Buscar Entre Hojas",
-        showBackButton: true,
-        showShadow: false,
-        showSearch: false,
-        showSearchIcon:true,
-        showShare: true,
-        showHeader: false,
-        showCartTitle: false,
-        showCheckoutTitle: false,
-      })
-    }, [])
-
   const {id : idParam} = useParams();
   const selectedPlant = id ?? idParam;
 
@@ -139,6 +123,21 @@ export default function PlantDetail({id}:{id?:number}) {
 
     addItem(plant.id, selectedQuantity);
     setHasAddedToCart(true);
+  };
+
+  const handleOrderNow = () => {
+    if (!plant) return;
+
+    navigate("/checkout", {
+      state: {
+        items: [
+          {
+            plantId: plant.id,
+            quantity: selectedQuantity,
+          },
+        ],
+      },
+    });
   };
   const descripcion = plant?.descripcion === "Descripcion" ? 'El Potus Variegado es una de las plantas de interior más apreciadas por su elegante follaje verde con manchas y vetas en tonos crema o blanco. Su crecimiento vigoroso y su fácil mantenimiento la convierten en una excelente opción tanto para principiantes como para amantes de las plantas. Se adapta muy bien a espacios interiores con buena iluminación indirecta y requiere riegos moderados, permitiendo que el sustrato se seque ligeramente entre riegos. Puede cultivarse en macetas colgantes o guiarse como trepadora, aportando frescura y un toque natural a cualquier ambiente. Su combinación de colores y su resistencia hacen del Potus Variegado una de las plantas más versátiles y decorativas para el hogar u oficina' : plant?.descripcion;
   const detailImages = plant?.imagenes.filter(
@@ -266,9 +265,13 @@ export default function PlantDetail({id}:{id?:number}) {
             </div>
           </section>
           <section className="px-2 flex flex-col gap-2">
-            <div className="h-10 flex justify-center items-center bg-primary-dark/80 text-bg-light font-Outfit text-xl rounded-sm shadow-md cursor-pointer">
+            <button
+              type="button"
+              onClick={handleOrderNow}
+              className="h-10 flex justify-center items-center bg-primary-dark/80 text-bg-light font-Outfit text-xl rounded-sm shadow-md cursor-pointer"
+            >
               <span className="font-light">Pedir ahora</span>
-            </div>
+            </button>
             <button
               type="button"
               onClick={handleAddToCart}
