@@ -27,7 +27,7 @@ export default function Checkout() {
     const [savedLocation, setSavedLocation] = useState<SavedLocation | null>(
         () => readSavedLocation(),
     )
-
+    const displayAddress = savedLocation ? `${savedLocation.address.split(",")[0]}, ${savedLocation.city}` : '';
     const handleLocationSave = (location: SavedLocation) => {
         saveLocation(location);
         setSavedLocation(location);
@@ -49,7 +49,7 @@ export default function Checkout() {
                 <button type="button" className='relative flex items-center border border-alt-faded rounded-sm focus:outline-none h-13 px-10 w-full shadow-sm cursor-pointer text-left' onClick={()=>{setShowLocationModal(true)}}>
                     <Location className='absolute left-3 h-5'/>
                     <div className='flex flex-col'>
-                        <span className='font-normal text-black'>{savedLocation?.address ?? 'Tu ubicación'}</span>
+                        <span className='font-normal text-black'>{displayAddress || 'Tu ubicación'}</span>
                         <span className='font-normal text-xs text-alt-faded'>{savedLocation ? formatLocation(savedLocation) : 'Agregar dirección'}</span>
                         {savedLocation?.details && <span className='font-normal text-xs text-alt-faded truncate'>Detalles: {savedLocation.details}</span>}
                     </div>

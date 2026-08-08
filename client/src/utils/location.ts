@@ -1,12 +1,12 @@
+export type DeliveryCity = "Villa Mercedes" | "San Luis";
 export type SavedLocation = {
+  city: DeliveryCity;
   address: string;
   details?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   updatedAt: string;
 };
-
-type DeliveryCity = "Villa Mercedes" | "San Luis";
 
 const DELIVERY_CITIES: Array<{
   name: DeliveryCity;

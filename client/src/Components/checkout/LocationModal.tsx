@@ -1,11 +1,16 @@
-import { useState } from "react";
-import { Close, Location } from "../../assets/icons";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Close, Location, Search } from "../../assets/icons";
 import {
   getDeliveryCityFromAddress,
   getDeliveryCityFromCoordinates,
   getMapQuery,
   type SavedLocation,
 } from "../../utils/location";
+import {
+  attachAddressAutocomplete,
+  geocodeAddress,
+  type GeocodedAddress,
+} from "../../utils/googleMaps";
 
 type LocationModalProps = {
   initialLocation: SavedLocation | null;
@@ -25,18 +30,65 @@ export default function LocationModal({
   const [mapQuery, setMapQuery] = useState(
     initialLocation ? getMapQuery(initialLocation) : DEFAULT_MAP_QUERY,
   );
-  const [coordinates, setCoordinates] = useState<Pick<
-    SavedLocation,
-    "latitude" | "longitude"
-  >>(
-    initialLocation?.latitude !== undefined && initialLocation.longitude !== undefined
-      ? { latitude: initialLocation.latitude, longitude: initialLocation.longitude }
-      : {},
-  );
+  const [coordinates, setCoordinates] = useState<
+  Partial<Pick<SavedLocation, "latitude" | "longitude">>
+>(
+  initialLocation
+    ? {
+        latitude: initialLocation.latitude,
+        longitude: initialLocation.longitude,
+      }
+    : {},
+);
   const [error, setError] = useState("");
   const [isLocating, setIsLocating] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const addressInputRef = useRef<HTMLInputElement>(null);
 
-  const showTypedAddress = () => {
+  const selectGeocodedAddress = useCallback((result: GeocodedAddress) => {
+    const deliveryCity = getDeliveryCityFromCoordinates(
+      result.latitude,
+      result.longitude,
+    );
+
+    if (!deliveryCity) {
+      setCoordinates({});
+      setError("Por ahora solo hacemos envíos en Villa Mercedes y San Luis.");
+      return;
+    }
+
+    setAddress(result.formattedAddress);
+    setCoordinates({
+      latitude: result.latitude,
+      longitude: result.longitude,
+    });
+    setMapQuery(`${result.latitude},${result.longitude}`);
+    setError("");
+  }, []);
+
+  useEffect(() => {
+    const input = addressInputRef.current;
+    if (!input) return;
+
+    let removeAutocomplete: (() => void) | undefined;
+    let isMounted = true;
+
+    void attachAddressAutocomplete(input, selectGeocodedAddress)
+      .then((remove) => {
+        if (isMounted) removeAutocomplete = remove;
+        else remove();
+      })
+      .catch(() => {
+        // La búsqueda manual mantiene una explicación más útil si Google no carga.
+      });
+
+    return () => {
+      isMounted = false;
+      removeAutocomplete?.();
+    };
+  }, [selectGeocodedAddress]);
+
+  const showTypedAddress = async () => {
     const trimmedAddress = address.trim();
     if (!trimmedAddress) {
       setError("Escribí una dirección para mostrarla en el mapa.");
@@ -48,9 +100,22 @@ export default function LocationModal({
       return;
     }
 
-    setCoordinates({});
-    setMapQuery(trimmedAddress);
+    setIsSearching(true);
     setError("");
+
+    try {
+      const result = await geocodeAddress(trimmedAddress);
+      selectGeocodedAddress(result);
+    } catch (searchError) {
+      setCoordinates({});
+      setError(
+        searchError instanceof Error
+          ? searchError.message
+          : "No pudimos buscar esa dirección. Intentá nuevamente.",
+      );
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const useCurrentLocation = () => {
@@ -91,26 +156,32 @@ export default function LocationModal({
   };
 
   const saveSelectedLocation = () => {
-    const trimmedAddress = address.trim();
-    if (!trimmedAddress) {
-      setError("Elegí tu ubicación actual o escribí una dirección antes de guardar.");
+    if (
+      coordinates.latitude === undefined ||
+      coordinates.longitude === undefined
+    ) {
+      setError("Primero ubicá la dirección en el mapa.");
       return;
     }
 
-    const deliveryCity =
-      coordinates.latitude !== undefined && coordinates.longitude !== undefined
-        ? getDeliveryCityFromCoordinates(coordinates.latitude, coordinates.longitude)
-        : getDeliveryCityFromAddress(trimmedAddress);
+    const city = getDeliveryCityFromCoordinates(
+      coordinates.latitude,
+      coordinates.longitude,
+    );
 
-    if (!deliveryCity) {
-      setError("Por ahora solo hacemos envíos en Villa Mercedes y San Luis.");
+    if (!city) {
+      setError(
+        "Por ahora solo hacemos envíos en Villa Mercedes y San Luis.",
+      );
       return;
     }
 
     onSave({
-      address: trimmedAddress,
+      city,
+      address: address.trim(),
       details: details.trim() || undefined,
-      ...coordinates,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
       updatedAt: new Date().toISOString(),
     });
   };
@@ -150,54 +221,50 @@ export default function LocationModal({
               referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
-          <button
-            type="button"
-            className="h-10 rounded-sm bg-primary text-white font-Manrope text-sm cursor-pointer disabled:cursor-wait disabled:opacity-70"
-            onClick={useCurrentLocation}
-            disabled={isLocating}
-          >
-            {isLocating ? "Buscando tu ubicación..." : "Usar mi ubicación actual"}
-          </button>
-          <form className="flex gap-2" onSubmit={(event) => { event.preventDefault(); showTypedAddress(); }}>
+          
+          <form className="flex gap-2" onSubmit={(event) => { event.preventDefault(); void showTypedAddress(); }}>
             <label className="relative flex items-center flex-1">
               <Location className="absolute left-3 h-5" />
               <input
                 type="text"
+                ref={addressInputRef}
                 value={address}
                 onChange={(event) => {
                   setAddress(event.target.value);
                   setCoordinates({});
                 }}
                 placeholder="Calle, número, ciudad"
-                className="font-Manrope font-light text-sm border border-alt-faded rounded-sm focus:outline-none h-10 px-10 w-full shadow-sm"
+                className="font-Manrope font-light text-sm border border-alt-faded rounded-sm focus:outline-none h-10 pl-10 w-full shadow-sm"
               />
             </label>
-            <button
-              type="submit"
-              className="rounded-sm border border-primary px-3 text-primary font-Manrope text-sm cursor-pointer"
-            >
-              Ver mapa
-            </button>
           </form>
+          <button
+              type="submit"
+              className="flex justify-center items-center rounded-sm gap-2 bg-primary-dark/35 h-10 px-3 shadow-sm font-Manrope font-medium text-lg text-primary-dark cursor-pointer disabled:cursor-wait disabled:opacity-70"
+              disabled={isSearching}
+            >
+              {isSearching ? "Buscando..." : "Buscar"}
+              <Search className="text-primary-dark h-6 w-6"/>
+            </button>
           {error && <p className="font-Manrope text-xs text-red-700">{error}</p>}
           <p className="font-Manrope text-xs text-black/60">
             Hacemos envíos únicamente en Villa Mercedes y San Luis.
           </p>
         </section>
         <section className="w-11/12 flex flex-col gap-3">
-          <label className="flex flex-col gap-1 font-Manrope text-sm text-black">
+          <label className="flex flex-col gap-1 font-Outfit text-lg text-black">
             Detalles opcionales
             <textarea
               value={details}
               onChange={(event) => setDetails(event.target.value)}
               placeholder="Ej.: departamento, piso, entre calles o indicaciones de entrega"
-              className="min-h-20 resize-y rounded-sm border border-alt-faded px-3 py-2 font-light shadow-sm focus:outline-none"
+              className="min-h-10 resize-y rounded-sm border border-alt-faded px-3 py-2 font-Manrope text-sm font-light shadow-sm focus:outline-none"
               maxLength={250}
             />
           </label>
           <button
             type="button"
-            className="h-10 rounded-sm bg-primary-dark text-white font-Manrope text-sm cursor-pointer"
+            className="h-10 rounded-sm bg-primary-dark text-white font-Manrope text-sm cursor-pointer shadow-md"
             onClick={saveSelectedLocation}
           >
             Guardar ubicación
