@@ -5,7 +5,6 @@ import * as Images from "../assets/images";
 import { Arrow2, Checked, Trash } from "../assets/icons";
 import { DiscountBadge } from "../Components/common";
 import { useCart } from "../contexts/CartContext";
-import { useHeader } from "../contexts/HeaderContext";
 import type { CartStorageItem } from "../utils/cart";
 
 interface PlantImage {
@@ -48,24 +47,12 @@ function SelectionBox({ selected }: { selected: boolean }) {
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { configureHeader } = useHeader();
   const { cart, removeItem, setQuantity } = useCart();
   const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
   const [selectedProductIds, setSelectedProductIds] = useState<Set<number>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const loadedProductIds = useRef<Set<number>>(new Set());
-
-  useEffect(() => {
-    configureHeader({ 
-        showHeader: true,
-        showBackButton: true,
-        showShare: false,
-        showSearch: false,
-        showSearchIcon: false,
-        showCartTitle: true,
-     });
-  }, [configureHeader]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -339,6 +326,14 @@ export default function Cart() {
         </div>
         <button
           type="button"
+          onClick={() => navigate("/checkout", {
+            state: {
+              items: selectedProducts.map(({ plant, quantity }) => ({
+                plantId: plant.id,
+                quantity,
+              })),
+            },
+          })}
           disabled={selectedProducts.length === 0}
           className="h-10 w-full rounded-md bg-primary-dark/80 font-Outfit font-normal text-xl text-bg-light shadow-md disabled:cursor-not-allowed disabled:opacity-45 cursor-pointer"
         >

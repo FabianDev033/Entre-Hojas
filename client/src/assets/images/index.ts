@@ -37,3 +37,11 @@ export {default as MercadoPagoIcon} from './pagoIcons/mercadopago.webp';
 export {default as BnaIcon} from './pagoIcons/bna.webp';
 export {default as CashIcon} from './pagoIcons/cash.webp';
 
+export {default as Whatsapp} from "./about/whatsapp.webp"
+export {default as Instagram} from "./about/instagram.webp"
+export {default as Mail} from "./about/mail.webp"
+
+export {default as Plants1} from "./about/plants1.webp"
+export {default as Plants2} from "./about/plants2.webp"
+export {default as Plants3} from "./about/plants3.webp"
+export {default as Plants4} from "./about/plants4.webp"

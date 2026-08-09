@@ -38,3 +38,4 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+client/src/.env

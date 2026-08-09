@@ -14,6 +14,8 @@ router.use("/plantas", createCrudRouter(plantaController));
 router.get("/productos/familia/:familia", plantaController.findByFamily);
 router.use("/productos", createCrudRouter(plantaController));
 router.use("/imagenes", createCrudRouter(imagenController));
+router.post("/ordenes/checkout", ordenController.checkout);
+router.get("/ordenes/:id", ordenController.findOrderDetailById);
 router.use("/ordenes", createCrudRouter(ordenController));
 router.use("/usuarios", createCrudRouter(userController));
 

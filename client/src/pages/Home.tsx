@@ -1,8 +1,6 @@
 import {PromoPotus1, PromoIcon, SingonioIcon, PotusIcon, MonsteraIcon, CalatheaIcon, MarantaIcon, PhilodendroIcon, AnturioIcon} from "../assets/images";
 import {Truck, Card, Plant} from "../assets/icons";
-import {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { useHeader } from "../contexts/HeaderContext";
 import { ProductList } from "../Components/mainLayout";
 const categories = [
   {name: "Ofertas", icon: PromoIcon, path: "./categories/Ofertas"},
@@ -21,20 +19,7 @@ const features = [
 ]
 
 export default function Home() {
-  const { configureHeader } = useHeader();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    configureHeader({
-      placeholder: "Buscar Entre Hojas",
-      showBackButton: false,
-      showShadow: false,
-      showSearch: true,
-      showShare: false,
-      showHeader: true,
-      showSearchIcon:false
-    });
-  }, []);
 
   const handleCategories = (path?: string) => {
     if (path) {
