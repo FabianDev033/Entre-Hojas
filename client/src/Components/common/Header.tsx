@@ -38,6 +38,9 @@ function getHeaderConfig(pathname: string): HeaderConfig | null {
     return { showBackButton: true, showShadow: false, showSearch: false, showSearchIcon: false, showShare: false };
   }
 
+  if (pathname === "/about") {
+    return null;
+  }
   return defaultHeader;
 }
 
