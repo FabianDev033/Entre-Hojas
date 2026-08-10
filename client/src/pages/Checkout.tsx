@@ -117,7 +117,7 @@ export default function Checkout() {
                 },
             });
             items.forEach(({ plantId }) => removeItem(plantId));
-            navigate(`/order/${response.data.orderId}`, { replace: true });
+            navigate(`/orden/${response.data.orderId}`, { replace: true });
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 setSubmitError(error.response?.data?.error ?? "No pudimos crear la orden. Intentá nuevamente.");
