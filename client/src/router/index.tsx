@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import MainLayout from "../layouts/MainLayout";
-import {Home, Category, Cart, About, Checkout, Order} from "../pages";
+import {MainLayout, AdminLayout} from "../layouts";
+import {Home, Category, Cart, About, Checkout, Order, LogIn} from "../pages";
 import { ProductList, PlantDetail } from "../Components/mainLayout";
 
 export const router = createBrowserRouter([
@@ -43,6 +43,16 @@ export const router = createBrowserRouter([
       }
     ],
   },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        index: true,
+        element: <LogIn />,
+      }
+    ]
+  }
 ]);
 
 
