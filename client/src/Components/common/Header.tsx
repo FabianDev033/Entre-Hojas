@@ -52,6 +52,9 @@ export default function Header() {
   if (!header) return null;
 
   const isCheckout = header.title === "Finaliza tu orden";
+  const handleHomeNavigate = () => {
+    pathname === "/" ? navigate("/admin") : navigate("/");
+  };
 
   return (
     <div
@@ -93,7 +96,7 @@ export default function Header() {
           src={Logo}
           alt="Logo"
           className="w-10 h-10 cursor-pointer"
-          onClick={() => navigate("/")}
+          onClick={() => handleHomeNavigate()}
         />
       )}
 
