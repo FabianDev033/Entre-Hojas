@@ -73,7 +73,7 @@ class OrdenModel extends BaseModel<Orden> {
       );
       const [orderResult] = await connection.execute<ResultSetHeader>(
         "INSERT INTO `ordenes` (`fecha`, `estado`, `total`, `clientes_id`) VALUES (NOW(), ?, ?, ?)",
-        ["En espera de pago", total, customerResult.insertId],
+        ["pendiente", total, customerResult.insertId],
       );
 
       for (const detail of details) {
