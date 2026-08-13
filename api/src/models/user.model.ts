@@ -14,6 +14,11 @@ class UserModel {
     return (rows[0] as User | undefined) ?? null;
   }
 
+  async findByUsername(usuario: string): Promise<User | null> {
+    const [rows] = await pool.execute<RowDataPacket[]>("SELECT `id`, `usuario`, `contraseña` FROM `user` WHERE `usuario` = ? LIMIT 1", [usuario]);
+    return (rows[0] as User | undefined) ?? null;
+  }
+
   async create(data: User): Promise<User> {
     await pool.execute<ResultSetHeader>("INSERT INTO `user` (`id`, `usuario`, `contraseña`) VALUES (?, ?, ?)", [data.id, data.usuario, data.contraseña]);
     return data;
