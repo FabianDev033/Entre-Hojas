@@ -10,7 +10,7 @@ const scrypt = promisify(scryptCallback) as (
   keyLength: number,
 ) => Promise<Buffer>;
 
-const invalidCredentials = () => new HttpError(401, "Usuario o contraseña inválidos.");
+const invalidCredentials = () => new HttpError(401, "Invalid user or password.");
 
 const verifyPassword = async (password: string, storedHash: string) => {
   const [algorithm, salt, expectedHash] = storedHash.split("$");
@@ -24,13 +24,13 @@ const verifyPassword = async (password: string, storedHash: string) => {
 };
 
 class AuthService {
-  async login(usuario: string, contraseña: string) {
-    const user = await userModel.findByUsername(usuario);
-    if (!user?.contraseña || !(await verifyPassword(contraseña, user.contraseña))) {
+  async login(user: string, password: string) {
+    const account = await userModel.findByUser(user);
+    if (!account?.password || !(await verifyPassword(password, account.password))) {
       throw invalidCredentials();
     }
 
-    const userResponse = { id: user.id, usuario: user.usuario };
+    const userResponse = { id: account.id, user: account.user };
     return { user: userResponse, session: createAuthToken(userResponse) };
   }
 }

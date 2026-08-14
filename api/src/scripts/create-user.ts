@@ -13,16 +13,16 @@ const readArgument = (name: string) => {
   return index === -1 ? undefined : process.argv[index + 1];
 };
 
-const usuario = readArgument("user");
-const contraseña = readArgument("password");
+const user = readArgument("user");
+const password = readArgument("password");
 
-if (!usuario || !contraseña) {
-  console.error("Uso: pnpm create-user -- --user <usuario> --password <contraseña>");
+if (!user || !password) {
+  console.error("Usage: pnpm create-user -- --user <user> --password <password>");
   process.exitCode = 1;
 } else {
   const salt = randomBytes(16).toString("hex");
-  const hash = (await scrypt(contraseña, salt, 64) as Buffer).toString("hex");
-  const contraseñaHasheada = `scrypt$${salt}$${hash}`;
+  const hash = (await scrypt(password, salt, 64) as Buffer).toString("hex");
+  const passwordHash = `scrypt$${salt}$${hash}`;
 
   const connection = await pool.getConnection();
   try {
@@ -30,15 +30,15 @@ if (!usuario || !contraseña) {
 
     const [existingRows] = await connection.execute<ExistingUser[]>(
       "SELECT `id` FROM `users` WHERE `user` = ? LIMIT 1 FOR UPDATE",
-      [usuario],
+      [user],
     );
 
     if (existingRows[0]) {
       await connection.execute<ResultSetHeader>(
         "UPDATE `users` SET `password` = ? WHERE `id` = ?",
-        [contraseñaHasheada, existingRows[0].id],
+        [passwordHash, existingRows[0].id],
       );
-      console.log(`Contraseña actualizada para el usuario '${usuario}'.`);
+      console.log(`Password updated for user '${user}'.`);
     } else {
       const [nextIdRows] = await connection.query<RowDataPacket[]>(
         "SELECT COALESCE(MAX(`id`), 0) + 1 AS nextId FROM `users` FOR UPDATE",
@@ -47,9 +47,9 @@ if (!usuario || !contraseña) {
 
       await connection.execute<ResultSetHeader>(
         "INSERT INTO `users` (`id`, `user`, `password`) VALUES (?, ?, ?)",
-        [nextId, usuario, contraseñaHasheada],
+        [nextId, user, passwordHash],
       );
-      console.log(`Usuario '${usuario}' creado.`);
+      console.log(`User '${user}' created.`);
     }
 
     await connection.commit();

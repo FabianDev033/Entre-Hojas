@@ -5,22 +5,22 @@ import { HttpError } from "../utils/http-error.js";
 import { authCookieOptions, getCookie, verifyAuthToken } from "../utils/auth-token.js";
 
 const login: RequestHandler = asyncHandler(async (request, response) => {
-  const { usuario, contraseña } = request.body as Record<string, unknown>;
-  if (typeof usuario !== "string" || typeof contraseña !== "string" || !usuario || !contraseña) {
-    throw new HttpError(400, "Los campos usuario y contraseña son obligatorios.");
+  const { user, password } = request.body as Record<string, unknown>;
+  if (typeof user !== "string" || typeof password !== "string" || !user || !password) {
+    throw new HttpError(400, "The user and password fields are required.");
   }
 
-  const { user, session } = await authService.login(usuario, contraseña);
+  const { user: authenticatedUser, session } = await authService.login(user, password);
   response.cookie("auth_token", session.token, authCookieOptions(session.maxAge));
-  response.json({ user });
+  response.json({ user: authenticatedUser });
 });
 
 const me: RequestHandler = asyncHandler(async (request, response) => {
   const token = getCookie(request.headers.cookie, "auth_token");
-  if (!token) throw new HttpError(401, "Sesión requerida.");
+  if (!token) throw new HttpError(401, "Authentication required.");
 
   const session = verifyAuthToken(token);
-  response.json({ user: { id: Number(session.sub), usuario: session.usuario } });
+  response.json({ user: { id: Number(session.sub), user: session.user } });
 });
 
 const logout: RequestHandler = (_request, response) => {
