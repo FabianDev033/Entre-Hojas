@@ -1,24 +1,29 @@
-export {default as Search} from "./Search"
-export {default as Truck} from "./Truck"
-export {default as Plant} from "./Plant"
-export {default as Card} from "./Card"
-export {default as Home} from "./Home"
-export {default as Category} from "./Category"
-export {default as Cart} from "./Cart"
-export {default as Info} from "./Info"
-export {default as Arrow} from "./Arrow"
-export {default as Arrow2} from "./Arrow2"
-export {default as Promo} from "./Promo"
-export {default as Fuego} from "./Fuego"
-export {default as Share} from "./Share"
-export {default as AddCart} from "./AddCart"
-export {default as Check} from "./Check"
-export {default as Close} from "./Close"
-export {default as Checked} from "./Checked"
-export {default as Trash} from "./Trash"
-export {default as User} from "./User"
-export {default as Phone} from "./Phone"
-export {default as Location} from "./Location"
-export {default as HourGlass} from "./HourGlass"
-export {default as User2} from "./User2"
-export {default as Lock} from "./Lock"
+export { default as Search } from "./Search";
+export { default as Truck } from "./Truck";
+export { default as Plant } from "./Plant";
+export { default as Card } from "./Card";
+export { default as Home } from "./Home";
+export { default as Category } from "./Category";
+export { default as Cart } from "./Cart";
+export { default as Info } from "./Info";
+export { default as Arrow } from "./Arrow";
+export { default as Arrow2 } from "./Arrow2";
+export { default as Promo } from "./Promo";
+export { default as Fuego } from "./Fuego";
+export { default as Share } from "./Share";
+export { default as AddCart } from "./AddCart";
+export { default as Check } from "./Check";
+export { default as Close } from "./Close";
+export { default as Checked } from "./Checked";
+export { default as Trash } from "./Trash";
+export { default as User } from "./User";
+export { default as Phone } from "./Phone";
+export { default as Location } from "./Location";
+export { default as HourGlass } from "./HourGlass";
+export { default as User2 } from "./User2";
+export { default as Lock } from "./Lock";
+export { default as Dashboard } from "./Dashboard";
+export { default as Orders } from "./Orders";
+export { default as Products } from "./Products";
+export { default as AddProduct } from "./AddProduct";
+export { default as AddStock } from "./AddStock";
