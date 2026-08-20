@@ -56,7 +56,7 @@ export default function Menu() {
     },
   ];
   return (
-    <aside className="w-80 h-svh bg-bg-dark flex flex-col items-center gap-15">
+    <aside className="w-60 h-svh bg-bg-dark flex flex-col items-center gap-15">
       <section className="w-11/12 flex flex-col gap-5 mt-3">
         <img src={Logo} alt="" className="w-20 aspect-square" />
         <span className="font-Outfit font-medium text-3xl text-black text-shadow-2xs">
