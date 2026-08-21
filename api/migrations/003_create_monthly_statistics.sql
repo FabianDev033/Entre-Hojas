@@ -1,0 +1,15 @@
+CREATE TABLE `monthly_statistics` (
+  `month` DATE NOT NULL,
+  `sales` DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `orders` INT UNSIGNED NOT NULL DEFAULT 0,
+  `confirmed_orders` INT UNSIGNED NOT NULL DEFAULT 0,
+  `average_order_value` DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `purchases` DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `profit` DECIMAL(12,2) NOT NULL DEFAULT 0,
+  `pending_orders` INT UNSIGNED NOT NULL DEFAULT 0,
+  `ready_orders` INT UNSIGNED NOT NULL DEFAULT 0,
+  `shipped_orders` INT UNSIGNED NOT NULL DEFAULT 0,
+  `cancelled_orders` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`month`)
+);

@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Cart, HourGlass, User2 } from "../assets/icons";
+import {useNavigate} from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -36,6 +37,7 @@ export default function Order() {
   const displayAddress = order?.direccion
   ? `${order.direccion.split(",")[0].trim()}, ${order.direccion.split(",").at(-1)?.trim()}`
   : "";
+  const navigate = useNavigate();
   useEffect(() => {
     const controller = new AbortController();
 
@@ -121,7 +123,10 @@ export default function Order() {
       </section>
       <section className='w-full h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-0 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]'>
             
-            <button className="w-11/12 py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer">
+            <button 
+            className="w-11/12 py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer"
+            onClick={() => {navigate("/")}}
+            >
                 Seguir comprando
             </button>
         </section>

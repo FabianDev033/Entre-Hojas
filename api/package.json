@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "create-user": "tsx src/scripts/create-user.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },

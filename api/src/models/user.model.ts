@@ -1,21 +1,26 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../config/database.js";
 
-export interface User { id: number; usuario: string | null; contraseña: string | null; }
+export interface User { id: number; user: string | null; password: string | null; }
 
 class UserModel {
   async findAll(): Promise<User[]> {
-    const [rows] = await pool.query<RowDataPacket[]>("SELECT `id`, `usuario`, `contraseña` FROM `user`");
+    const [rows] = await pool.query<RowDataPacket[]>("SELECT `id`, `user`, `password` FROM `users`");
     return rows as User[];
   }
 
   async findById(id: number): Promise<User | null> {
-    const [rows] = await pool.execute<RowDataPacket[]>("SELECT `id`, `usuario`, `contraseña` FROM `user` WHERE `id` = ?", [id]);
+    const [rows] = await pool.execute<RowDataPacket[]>("SELECT `id`, `user`, `password` FROM `users` WHERE `id` = ?", [id]);
+    return (rows[0] as User | undefined) ?? null;
+  }
+
+  async findByUser(user: string): Promise<User | null> {
+    const [rows] = await pool.execute<RowDataPacket[]>("SELECT `id`, `user`, `password` FROM `users` WHERE `user` = ? LIMIT 1", [user]);
     return (rows[0] as User | undefined) ?? null;
   }
 
   async create(data: User): Promise<User> {
-    await pool.execute<ResultSetHeader>("INSERT INTO `user` (`id`, `usuario`, `contraseña`) VALUES (?, ?, ?)", [data.id, data.usuario, data.contraseña]);
+    await pool.execute<ResultSetHeader>("INSERT INTO `users` (`id`, `user`, `password`) VALUES (?, ?, ?)", [data.id, data.user, data.password]);
     return data;
   }
 
@@ -26,7 +31,7 @@ class UserModel {
   }
 
   async delete(id: number): Promise<boolean> {
-    const [result] = await pool.execute<ResultSetHeader>("DELETE FROM `user` WHERE `id` = ?", [id]);
+    const [result] = await pool.execute<ResultSetHeader>("DELETE FROM `users` WHERE `id` = ?", [id]);
     return result.affectedRows > 0;
   }
 }
