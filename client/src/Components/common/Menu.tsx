@@ -6,12 +6,30 @@ import {
   Products,
   AddProduct,
   AddStock,
+  LogOut,
 } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 export default function Menu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   if (pathname === "/admin/login") return null;
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+  const logout = () => {
+    axios
+      .post(`${API_BASE_URL}/api/auth/logout`, {}, { withCredentials: true })
+      .then(() => {
+        navigate("/admin/login");
+      })
+      .catch((error) => {
+        console.error("Error during logout:", error);
+      });
+  };
+
+  const navigateStore = () => {
+    navigate("/");
+  };
 
   const menu = [
     {
@@ -58,7 +76,12 @@ export default function Menu() {
   return (
     <aside className="w-60 h-svh bg-bg-dark flex flex-col items-center gap-15">
       <section className="w-11/12 flex flex-col gap-5 mt-3">
-        <img src={Logo} alt="" className="w-20 aspect-square" />
+        <img
+          src={Logo}
+          alt=""
+          className="w-20 aspect-square cursor-pointer"
+          onClick={() => navigateStore()}
+        />
         <span className="font-Outfit font-medium text-3xl text-black text-shadow-2xs">
           Entre Hojas
         </span>
@@ -74,6 +97,12 @@ export default function Menu() {
           </div>
         ))}
       </section>
+      <div
+        className="w-full mt-auto font-Outfit font-normal text-lg text-black flex gap-3 ml-8 mb-2 cursor-pointer hover:text-alt-dark transition-all ease-in-out duration-200"
+        onClick={() => logout()}>
+        <LogOut className="w-6 aspect-square " />
+        Log out
+      </div>
     </aside>
   );
 }
