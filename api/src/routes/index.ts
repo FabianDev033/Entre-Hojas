@@ -20,6 +20,7 @@ router.get("/productos/familia/:familia", plantaController.findByFamily);
 router.use("/productos", createCrudRouter(plantaController));
 router.use("/imagenes", createCrudRouter(imagenController));
 router.post("/ordenes/checkout", ordenController.checkout);
+router.patch("/ordenes/:id/estado", ordenController.updateStatus);
 router.get("/ordenes/:id", ordenController.findOrderDetailById);
 router.use("/ordenes", createCrudRouter(ordenController));
 
