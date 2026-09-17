@@ -37,6 +37,7 @@ export type Order = {
 };
 export type OrdersByStatus = Record<OrderStatus, Order[]>;
 type OrdersContextType = {
+  allOrders: Order[];
   orders: OrdersByStatus;
   isLoading: boolean;
   error: string | null;
@@ -151,7 +152,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const orders = useMemo(() => groupOrdersByStatus(allOrders), [allOrders]);
   const value = useMemo<OrdersContextType>(
-    () => ({ orders, isLoading, error, refreshOrders, updateOrderStatus }),
+    () => ({ allOrders, orders, isLoading, error, refreshOrders, updateOrderStatus }),
     [allOrders, orders, isLoading, error, refreshOrders, updateOrderStatus],
   );
   return (

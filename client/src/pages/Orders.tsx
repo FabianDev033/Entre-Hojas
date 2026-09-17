@@ -1,12 +1,12 @@
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
-import { move } from "@dnd-kit/helpers";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Column, Item } from "../Components/orders";
 import { Search } from "../assets/icons";
 import {
   useOrders,
+  type Order,
   type OrderStatus,
   type OrdersByStatus,
 } from "../contexts/OrdersContext";
@@ -22,9 +22,54 @@ const findOrderStatus = (
   );
 };
 
+const statusIds: OrderStatus[] = [
+  "pending",
+  "ready",
+  "shipped",
+  "confirmed",
+  "canceled",
+];
+
+const getDraggedOrderId = (id: string | number | undefined) => {
+  const value = String(id ?? "").replace("search-", "");
+  const orderId = Number(value);
+  return Number.isInteger(orderId) ? orderId : null;
+};
+
+const getTargetStatus = (
+  targetId: string | number | undefined,
+  orders: OrdersByStatus,
+) => {
+  const target = String(targetId ?? "");
+  if (statusIds.includes(target as OrderStatus)) return target as OrderStatus;
+
+  const targetOrderId = getDraggedOrderId(target);
+  return targetOrderId === null
+    ? null
+    : findOrderStatus(orders, targetOrderId);
+};
+
+const moveOrderToStatus = (
+  orders: OrdersByStatus,
+  order: Order,
+  status: OrderStatus,
+): OrdersByStatus => {
+  const updatedOrders = Object.fromEntries(
+    statusIds.map((id) => [
+      id,
+      orders[id].filter((currentOrder) => currentOrder.id !== order.id),
+    ]),
+  ) as OrdersByStatus;
+
+  updatedOrders[status] = [...updatedOrders[status], order];
+  return updatedOrders;
+};
+
 export default function Orders() {
-  const { orders, isLoading, error, updateOrderStatus } = useOrders();
+  const { allOrders, orders, isLoading, error, updateOrderStatus } =
+    useOrders();
   const isSavingRef = useRef(false);
+  const [search, setSearch] = useState("");
   const [ordersDnd, setOrdersDnd] = useState<OrdersByStatus>({
     pending: [],
     ready: [],
@@ -38,6 +83,17 @@ export default function Orders() {
       setOrdersDnd(orders);
     }
   }, [orders, isLoading]);
+
+  const searchResults = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase();
+    if (!query) return [];
+
+    return allOrders.filter(
+      (order) =>
+        String(order.id).includes(query) ||
+        order.cliente.nombre.toLocaleLowerCase().includes(query),
+    );
+  }, [allOrders, search]);
 
   if (isLoading) {
     return (
@@ -60,19 +116,16 @@ export default function Orders() {
       return;
     }
 
-    const orderId = Number(event.operation.source?.id);
-    if (!Number.isInteger(orderId)) {
+    const orderId = getDraggedOrderId(event.operation.source?.id);
+    const nextStatus = getTargetStatus(event.operation.target.id, ordersDnd);
+    const order = allOrders.find((currentOrder) => currentOrder.id === orderId);
+    if (!orderId || !nextStatus || !order) {
       return;
     }
 
     const previousOrders = ordersDnd;
     const previousStatus = findOrderStatus(previousOrders, orderId);
-    const nextOrders = move(previousOrders, event);
-    const nextStatus = findOrderStatus(nextOrders, orderId);
-
-    if (!previousStatus || !nextStatus) {
-      return;
-    }
+    const nextOrders = moveOrderToStatus(previousOrders, order, nextStatus);
 
     setOrdersDnd(nextOrders);
 
@@ -95,20 +148,43 @@ export default function Orders() {
 
   return (
     <main className="h-svh w-full bg-bg-dark flex flex-col gap-10 items-center overflow-hidden">
-      <div className="justify-self-center flex justify-end items-center py-2 px-4 bg-bg-light rounded-sm shadow-md mt-3 mr-60 border border-alt-dark">
-        <input
-          className="text-sm font-Manrope focus:outline-none"
-          placeholder="Buscar ordenes"
-        />
-
-        <div className="w-11/12 h-full bg-transparent flex justify-center items-center rounded-r-md">
-          <Search className="w-6 h-6 text-black" />
-        </div>
-      </div>
-
       <DragDropProvider
         onDragOver={(event) => event.preventDefault()}
         onDragEnd={handleDragEnd}>
+        <div className="relative z-10 justify-self-center flex items-center py-2 px-4 bg-bg-light rounded-sm shadow-md mt-3 mr-60 border border-alt-dark">
+          <input
+            className="text-sm font-Manrope focus:outline-none"
+            placeholder="Buscar por nombre o # de orden"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+
+          <div className="w-11/12 h-full bg-transparent flex justify-center items-center rounded-r-md">
+            <Search className="w-6 h-6 text-black" />
+          </div>
+
+          {search.trim() && (
+            <div className="absolute top-full left-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-sm border border-alt-dark bg-bg-light p-2 shadow-md">
+              {searchResults.length > 0 ? (
+                searchResults.map((order, index) => (
+                  <Item
+                    key={`search-${order.id}`}
+                    id={`search-${order.id}`}
+                    index={index}
+                    order={order}
+                    column="search">
+                    Orden #{order.id}
+                  </Item>
+                ))
+              ) : (
+                <p className="p-2 text-sm font-Manrope">
+                  No encontramos órdenes.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
         <section className="grid grid-cols-4 grid-rows-2 gap-3 w-full max-h-svh h-svh font-Outfit text-lg text-black">
           <div className="row-span-2 flex flex-col items-center max-h-[85vh] min-h-[85vh]">
             <span className="text-3xl">En proceso</span>
