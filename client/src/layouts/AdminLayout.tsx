@@ -1,7 +1,7 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { Menu } from "../Components/common";
 import { DashboardStatsProvider } from "../contexts/DashboardStatsContext";
+import { OrdersProvider } from "../contexts/OrdersContext";
 
 export default function AdminLayout() {
   return (
@@ -12,7 +12,9 @@ export default function AdminLayout() {
 
       <main className="flex-1">
         <DashboardStatsProvider>
-          <Outlet />
+          <OrdersProvider>
+            <Outlet />
+          </OrdersProvider>
         </DashboardStatsProvider>
       </main>
     </div>

@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"pnpm --filter api dev\" \"pnpm --filter client dev\""
-    
   },
   "repository": {
     "type": "git",
@@ -22,5 +21,8 @@
   "homepage": "https://github.com/FabianDev033/Entre-Hojas#readme",
   "devDependencies": {
     "concurrently": "^10.0.3"
+  },
+  "dependencies": {
+    "@dnd-kit/helpers": "^0.5.0"
   }
 }
