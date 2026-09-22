@@ -13,6 +13,7 @@ import {
 } from "../utils/location";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+type PaymentMethod = "transferencia" | "mercado_pago" | "efectivo";
 
 function formatMoney(value: number) {
   return `$ ${Math.round(value).toLocaleString("es-AR")}`;
@@ -56,6 +57,7 @@ export default function Checkout() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">("");
   const navigate = useNavigate();
   const { removeItem } = useCart();
   useEffect(() => {
@@ -106,6 +108,10 @@ export default function Checkout() {
       setSubmitError("Ingresá tu nombre completo.");
       return;
     }
+    if (!paymentMethod) {
+      setSubmitError("Elegí un medio de pago.");
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -120,11 +126,14 @@ export default function Checkout() {
             direccion: [
               savedLocation.address,
               savedLocation.city,
-              savedLocation.details,
             ]
               .filter(Boolean)
               .join(", "),
+            detalleUbicacion: savedLocation.details,
+            latitude: savedLocation.latitude,
+            longitude: savedLocation.longitude,
           },
+          paymentMethod,
         },
       );
       items.forEach(({ plantId }) => removeItem(plantId));
@@ -206,6 +215,10 @@ export default function Checkout() {
             <input
               name="pago"
               type="radio"
+              value="transferencia"
+              form="checkout-form"
+              checked={paymentMethod === "transferencia"}
+              onChange={() => setPaymentMethod("transferencia")}
               className="appearance-none w-4 h-4 border border-black/30 bg-bg-light rounded-lg checked:bg-primary checked:border-primary"
             />
             <div className="flex items-center gap-2">
@@ -219,6 +232,10 @@ export default function Checkout() {
             <input
               name="pago"
               type="radio"
+              value="mercado_pago"
+              form="checkout-form"
+              checked={paymentMethod === "mercado_pago"}
+              onChange={() => setPaymentMethod("mercado_pago")}
               className="appearance-none w-4 h-4 border border-black/30 bg-bg-light rounded-lg checked:bg-primary checked:border-primary"
             />
             <div className="flex items-center gap-2">
@@ -232,6 +249,10 @@ export default function Checkout() {
             <input
               name="pago"
               type="radio"
+              value="efectivo"
+              form="checkout-form"
+              checked={paymentMethod === "efectivo"}
+              onChange={() => setPaymentMethod("efectivo")}
               className="appearance-none w-4 h-4 border border-black/30 bg-bg-light rounded-lg checked:bg-primary checked:border-primary"
             />
             <div className="flex items-center gap-2">

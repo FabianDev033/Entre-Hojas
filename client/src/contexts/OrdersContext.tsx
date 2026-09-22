@@ -24,6 +24,7 @@ export type OrderItem = {
   subtotal: number;
 };
 export type OrderCustomer = { nombre: string; telefono: string | null };
+export type PaymentMethod = "transferencia" | "mercado_pago" | "efectivo";
 export type Order = {
   id: number;
   fecha: string | null;
@@ -32,6 +33,10 @@ export type Order = {
   total: number;
   clientes_id: number;
   direccion: string | null;
+  detalleUbicacion: string | null;
+  latitud: number | null;
+  longitud: number | null;
+  medioPago: PaymentMethod | null;
   cliente: OrderCustomer;
   items: OrderItem[];
 };
