@@ -64,7 +64,7 @@ export default function Item({ id, index, column, order }: ItemProps) {
             ? "border-primary-dark shadow-[0_5px_5px_rgba(74,111,68,.3)]"
             : column === "canceled"
               ? " border-alt-dark shadow-[0_5px_5px_rgba(105,68,111,.3)]"
-              : " border-black shadow-md"
+              : " border-black/70 shadow-md"
         }
         `}>
       <div
@@ -101,8 +101,8 @@ export default function Item({ id, index, column, order }: ItemProps) {
               <span>{order?.cliente.telefono}</span>
               <span>{displayAddress}</span>
               <span>detalle</span>
-              <span className="font-medium text-secondary">Contacto</span>
-              <span className="font-medium text-secondary">Maps</span>
+              <span className="font-medium text-secondary z-10">Contacto</span>
+              <span className="font-medium text-secondary z-10">Maps</span>
             </div>
             <div className="flex flex-col gap-3 pl-4 border-l border-black">
               {order?.items.map((plant) => (

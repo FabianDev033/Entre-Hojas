@@ -44,9 +44,7 @@ const getTargetStatus = (
   if (statusIds.includes(target as OrderStatus)) return target as OrderStatus;
 
   const targetOrderId = getDraggedOrderId(target);
-  return targetOrderId === null
-    ? null
-    : findOrderStatus(orders, targetOrderId);
+  return targetOrderId === null ? null : findOrderStatus(orders, targetOrderId);
 };
 
 const moveOrderToStatus = (
@@ -154,7 +152,7 @@ export default function Orders() {
         <div className="relative z-10 justify-self-center flex items-center py-2 px-4 bg-bg-light rounded-sm shadow-md mt-3 mr-60 border border-alt-dark">
           <input
             className="text-sm font-Manrope focus:outline-none"
-            placeholder="Buscar por nombre o # de orden"
+            placeholder="Buscar ordenes"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />

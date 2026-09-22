@@ -119,14 +119,14 @@ export default function StatCard({
           </span>
           <div className="flex justify-around items-center my-auto mb-4">
             <div className="flex flex-col gap-3 items-center">
-              <span className="font-Outfit font-extralight text-xl">
+              <span className="font-Outfit font-extralight text-2xl">
                 {summaryOrdersStats?.total ?? 0}
               </span>
               <span className="font-Manrope font-light text-sm">Totales</span>
             </div>
             <div className="border-l border-black/60 h-full"></div>
             <div className="flex flex-col gap-3 items-center">
-              <span className="font-Outfit font-extralight text-xl">
+              <span className="font-Outfit font-extralight text-2xl">
                 {summaryOrdersStats?.confirmado ?? 0}
               </span>
               <span className="font-Manrope font-light text-sm">
@@ -135,7 +135,7 @@ export default function StatCard({
             </div>
             <div className="border-r border-black/60 h-full"></div>
             <div className="flex flex-col gap-3 items-center">
-              <span className="font-Outfit font-extralight text-xl">
+              <span className="font-Outfit font-extralight text-2xl">
                 {summaryOrdersStats?.cancelado ?? 0}
               </span>
               <span className="font-Manrope font-light text-sm">
