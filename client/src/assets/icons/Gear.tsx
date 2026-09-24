@@ -3,6 +3,7 @@ import type { SVGProps } from "react";
 export default function Gear(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
+      {...props}
       width="25"
       height="25"
       viewBox="0 0 25 25"

@@ -33,3 +33,6 @@ export { default as List } from "./List";
 export { default as Cancel } from "./Cancel";
 export { default as Accept } from "./Accept";
 export { default as Bag } from "./Bag";
+export { default as Reorder } from "./Reorder";
+export { default as Add } from "./Add";
+export { default as Subtract } from "./Subtract";

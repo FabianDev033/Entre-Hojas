@@ -3,6 +3,7 @@ import type { SVGProps } from "react";
 export default function Cancel(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
+      {...props}
       width="41"
       height="40"
       viewBox="0 0 41 40"
