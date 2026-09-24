@@ -16,6 +16,7 @@ import {
   Shoppings,
 } from "../pages";
 import { ProductList, PlantDetail } from "../Components/mainLayout";
+import { ProductsProvider } from "../contexts/ProductsContext";
 
 export const router = createBrowserRouter([
   {
@@ -74,7 +75,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "productos",
-        element: <Products />,
+        element: <ProductsProvider><Products /></ProductsProvider>,
       },
       {
         path: "agregarProducto",
