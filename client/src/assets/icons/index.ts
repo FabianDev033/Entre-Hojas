@@ -28,3 +28,8 @@ export { default as Products } from "./Products";
 export { default as AddProduct } from "./AddProduct";
 export { default as AddStock } from "./AddStock";
 export { default as LogOut } from "./LogOut";
+export { default as Gear } from "./Gear";
+export { default as List } from "./List";
+export { default as Cancel } from "./Cancel";
+export { default as Accept } from "./Accept";
+export { default as Bag } from "./Bag";
