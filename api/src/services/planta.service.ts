@@ -16,6 +16,16 @@ class PlantaService extends BaseService<Planta> {
   findByFamily(familia: string) {
     return plantaModel.findByFamily(familia);
   }
+
+  findAllInventory() {
+    return plantaModel.findAllInventory();
+  }
+
+  async addStock(id: number, amount: number) {
+    const plant = await plantaModel.addStock(id, amount);
+    if (!plant) throw new HttpError(404, "Plant not found.");
+    return plant;
+  }
 }
 
 export default new PlantaService();

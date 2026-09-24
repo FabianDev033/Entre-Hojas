@@ -6,6 +6,7 @@ import imagenController from "../controllers/imagen.controller.js";
 import ordenController from "../controllers/orden.controller.js";
 import ordenDetalleController from "../controllers/orden-detalle.controller.js";
 import plantaController from "../controllers/planta.controller.js";
+import { requireAuth } from "../middleware/require-auth.js";
 import { createCrudRouter } from "./crud.routes.js";
 
 const router = Router();
@@ -15,6 +16,8 @@ router.get("/auth/me", authController.me);
 router.get("/dashboard", dashboardController.getDashboard);
 router.use("/clientes", createCrudRouter(clienteController));
 router.get("/plantas/familia/:familia", plantaController.findByFamily);
+router.get("/productos/inventario", requireAuth, plantaController.findAllInventory);
+router.patch("/productos/:id/stock", requireAuth, plantaController.updateStock);
 router.use("/plantas", createCrudRouter(plantaController));
 router.get("/productos/familia/:familia", plantaController.findByFamily);
 router.use("/productos", createCrudRouter(plantaController));
