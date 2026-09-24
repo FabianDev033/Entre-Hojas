@@ -1,7 +1,7 @@
-import {PromoPotus1, PromoIcon, SingonioIcon, PotusIcon, MonsteraIcon, CalatheaIcon, MarantaIcon, PhilodendroIcon, AnturioIcon} from "../assets/images";
-import {Truck, Card, Plant} from "../assets/icons";
+import {PromoPotus1, PromoIcon, SingonioIcon, PotusIcon, MonsteraIcon, CalatheaIcon, MarantaIcon, PhilodendroIcon, AnturioIcon} from "../../assets/images";
+import {Truck, Card, Plant} from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
-import { ProductList } from "../Components/mainLayout";
+import { ProductList } from "../../Components/mainLayout";
 const categories = [
   {name: "Ofertas", icon: PromoIcon, path: "./categories/Ofertas"},
   {name: "Singonio", icon: SingonioIcon, path: "/categories/Singonio"},

@@ -1,6 +1,6 @@
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import { StatCard } from "../Components/adminLayout";
+import { StatCard } from "../../Components/adminLayout";
 
 export default function Dashboard() {
   const { currentUser, isLoading } = useAuth();

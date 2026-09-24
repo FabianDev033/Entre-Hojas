@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Cart, HourGlass, User2 } from "../assets/icons";
+import { Cart, HourGlass, User2 } from "../../assets/icons";
 import {useNavigate} from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";

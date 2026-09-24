@@ -1,6 +1,6 @@
-import Logo from "../assets/images/Logo.png";
+import Logo from "../../assets/images/Logo.png";
 import { useNavigate } from "react-router-dom";
-import { Whatsapp, Instagram, Mail, Plants1, Plants2, Plants3, Plants4 } from "../assets/images";
+import { Whatsapp, Instagram, Mail, Plants1, Plants2, Plants3, Plants4 } from "../../assets/images";
 export default function About() {
   const navigate = useNavigate();
   const plants = [

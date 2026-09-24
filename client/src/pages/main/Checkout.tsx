@@ -1,16 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react";
 import axios from "axios";
-import { User, Phone, Location } from "../assets/icons";
-import { BnaIcon, CashIcon, MercadoPagoIcon } from "../assets/images";
-import LocationModal from "../Components/checkout/LocationModal";
+import { User, Phone, Location } from "../../assets/icons";
+import { BnaIcon, CashIcon, MercadoPagoIcon } from "../../assets/images";
+import LocationModal from "../../Components/checkout/LocationModal";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../../contexts/CartContext";
 import {
   formatLocation,
   readSavedLocation,
   saveLocation,
   type SavedLocation,
-} from "../utils/location";
+} from "../../utils/location";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 type PaymentMethod = "transferencia" | "mercado_pago" | "efectivo";

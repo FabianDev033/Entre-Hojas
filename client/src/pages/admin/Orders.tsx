@@ -2,14 +2,14 @@ import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-import { Column, Item } from "../Components/orders";
-import { Search } from "../assets/icons";
+import { Column, Item } from "../../Components/orders";
+import { Search } from "../../assets/icons";
 import {
   useOrders,
   type Order,
   type OrderStatus,
   type OrdersByStatus,
-} from "../contexts/OrdersContext";
+} from "../../contexts/OrdersContext";
 
 const findOrderStatus = (
   orders: OrdersByStatus,
