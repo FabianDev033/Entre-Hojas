@@ -13,7 +13,7 @@ import {
   Orders,
   Products,
   AddProd,
-  AddStock,
+  Shoppings,
 } from "../pages";
 import { ProductList, PlantDetail } from "../Components/mainLayout";
 
@@ -81,8 +81,8 @@ export const router = createBrowserRouter([
         element: <AddProd />,
       },
       {
-        path: "actualizarStock",
-        element: <AddStock />,
+        path: "Compras",
+        element: <Shoppings />,
       },
     ],
   },

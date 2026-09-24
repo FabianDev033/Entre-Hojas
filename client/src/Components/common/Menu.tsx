@@ -5,7 +5,7 @@ import {
   Orders,
   Products,
   AddProduct,
-  AddStock,
+  Bag,
   LogOut,
 } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
@@ -65,11 +65,11 @@ export default function Menu() {
       },
     },
     {
-      name: "Actualizar Stock",
-      icon: <AddStock className="w-7 aspect-square" />,
-      path: "/admin/actualizarStock",
+      name: "Compras",
+      icon: <Bag className="w-7 aspect-square" />,
+      path: "/admin/Compras",
       navigate: () => {
-        navigate("actualizarStock");
+        navigate("Compras");
       },
     },
   ];
