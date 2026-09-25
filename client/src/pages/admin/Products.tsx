@@ -143,7 +143,7 @@ export default function Products() {
           </p>
         )}
 
-        <div className="w-full h-full min-h-0 overflow-y-auto flex flex-col pt-4 gap-4 items-center justify-start">
+        <div className="w-full h-full min-h-0 overflow-y-auto flex flex-col pt-4 gap-4 items-center justify-start pb-10">
           {!isLoading &&
             !error &&
             filteredProducts.map((product) => {
