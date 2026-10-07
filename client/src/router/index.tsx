@@ -58,16 +58,16 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: "/admin/login",
+    element: <LogIn />,
+  },
+  {
     path: "/admin",
     element: <AdminLayout />,
     children: [
       {
         index: true,
         element: <Dashboard />,
-      },
-      {
-        path: "login",
-        element: <LogIn />,
       },
       {
         path: "ordenes",
