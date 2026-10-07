@@ -38,7 +38,7 @@ export default function Item({ id, index, column, order }: ItemProps) {
     id,
     index,
     type: "item",
-    accept: "item",
+    accept: column === "search" ? [] : "item",
     group: column,
   });
 
@@ -83,6 +83,7 @@ export default function Item({ id, index, column, order }: ItemProps) {
   return (
     <div
       ref={ref}
+      data-order-id={order?.id}
       data-dragging={isDragging}
       className={`mb-4 py-4 border rounded-sm bg-bg-light flex flex-col justify-between items-center min-h-15 relative  ${
         isDragging ? "opacity-50" : ""

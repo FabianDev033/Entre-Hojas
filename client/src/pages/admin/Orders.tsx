@@ -1,12 +1,21 @@
-import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  DragDropProvider,
+  DragOverlay,
+  type DragEndEvent,
+  type DragOverEvent,
+} from "@dnd-kit/react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Column, Item } from "../../Components/orders";
+import {
+  moveOrder,
+  statusIds,
+  syncOrders,
+} from "../../Components/orders/orderBoard";
 import { Search } from "../../assets/icons";
 import {
   useOrders,
-  type Order,
   type OrderStatus,
   type OrdersByStatus,
 } from "../../contexts/OrdersContext";
@@ -22,45 +31,10 @@ const findOrderStatus = (
   );
 };
 
-const statusIds: OrderStatus[] = [
-  "pending",
-  "ready",
-  "shipped",
-  "confirmed",
-  "canceled",
-];
-
 const getDraggedOrderId = (id: string | number | undefined) => {
   const value = String(id ?? "").replace("search-", "");
   const orderId = Number(value);
   return Number.isInteger(orderId) ? orderId : null;
-};
-
-const getTargetStatus = (
-  targetId: string | number | undefined,
-  orders: OrdersByStatus,
-) => {
-  const target = String(targetId ?? "");
-  if (statusIds.includes(target as OrderStatus)) return target as OrderStatus;
-
-  const targetOrderId = getDraggedOrderId(target);
-  return targetOrderId === null ? null : findOrderStatus(orders, targetOrderId);
-};
-
-const moveOrderToStatus = (
-  orders: OrdersByStatus,
-  order: Order,
-  status: OrderStatus,
-): OrdersByStatus => {
-  const updatedOrders = Object.fromEntries(
-    statusIds.map((id) => [
-      id,
-      orders[id].filter((currentOrder) => currentOrder.id !== order.id),
-    ]),
-  ) as OrdersByStatus;
-
-  updatedOrders[status] = [...updatedOrders[status], order];
-  return updatedOrders;
 };
 
 export default function Orders() {
@@ -68,19 +42,15 @@ export default function Orders() {
     useOrders();
   const isSavingRef = useRef(false);
   const [search, setSearch] = useState("");
-  const [ordersDnd, setOrdersDnd] = useState<OrdersByStatus>({
-    pending: [],
-    ready: [],
-    shipped: [],
-    confirmed: [],
-    canceled: [],
-  });
+  const [isSearchDrag, setIsSearchDrag] = useState(false);
+  const [ordersDnd, setOrdersDnd] = useState(orders);
+  const [syncedOrders, setSyncedOrders] = useState(orders);
+  const beforeDrag = useRef(orders);
 
-  useEffect(() => {
-    if (!isLoading) {
-      setOrdersDnd(orders);
-    }
-  }, [orders, isLoading]);
+  if (orders !== syncedOrders) {
+    setSyncedOrders(orders);
+    setOrdersDnd(syncOrders(ordersDnd, orders));
+  }
 
   const searchResults = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -109,23 +79,60 @@ export default function Orders() {
     );
   }
 
+  const handleDragOver = (event: DragOverEvent) => {
+    // React owns the preview too, so the DOM and the saved position agree.
+    event.preventDefault();
+    const { source, target } = event.operation;
+    if (!source || !target) return;
+    const orderId = getDraggedOrderId(source.id);
+    const targetOrderId = getDraggedOrderId(target.id);
+    const order = allOrders.find((item) => item.id === orderId);
+    const nextStatus = statusIds.includes(target.id as OrderStatus)
+      ? (target.id as OrderStatus)
+      : targetOrderId === null
+        ? null
+        : findOrderStatus(ordersDnd, targetOrderId);
+    if (!order || !nextStatus || orderId === targetOrderId) return;
+
+    const destination = ordersDnd[nextStatus];
+    const targetIndex = destination.findIndex(
+      (item) => item.id === targetOrderId,
+    );
+    const currentIndex = destination.findIndex((item) => item.id === orderId);
+    const y = event.operation.shape?.current.center.y;
+    const below =
+      y !== undefined && target.shape ? y > target.shape.center.y : false;
+    let index = targetIndex;
+    if (targetIndex === -1) {
+      // Use the cards, not the column's midpoint, for gaps and empty space.
+      const cards = Array.from(target.element?.children ?? []).filter(
+        (card) => card.getAttribute("data-order-id") !== String(orderId),
+      );
+      index = cards.findIndex((card) => {
+        const rect = card.getBoundingClientRect();
+        return y !== undefined && y < rect.top + rect.height / 2;
+      });
+      if (index === -1) index = cards.length;
+    } else if (currentIndex === -1 && below) {
+      index += 1;
+    }
+    if (currentIndex === index) return;
+    setOrdersDnd(moveOrder(ordersDnd, order, nextStatus, index));
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
-    if (event.canceled || !event.operation.target || isSavingRef.current) {
+    const previousOrders = beforeDrag.current;
+    if (event.canceled || !event.operation.target) {
+      setOrdersDnd(previousOrders);
       return;
     }
 
     const orderId = getDraggedOrderId(event.operation.source?.id);
-    const nextStatus = getTargetStatus(event.operation.target.id, ordersDnd);
-    const order = allOrders.find((currentOrder) => currentOrder.id === orderId);
-    if (!orderId || !nextStatus || !order) {
-      return;
-    }
-
-    const previousOrders = ordersDnd;
+    const nextStatus =
+      orderId === null ? null : findOrderStatus(ordersDnd, orderId);
+    if (!orderId || !nextStatus) return;
     const previousStatus = findOrderStatus(previousOrders, orderId);
-    const nextOrders = moveOrderToStatus(previousOrders, order, nextStatus);
-
-    setOrdersDnd(nextOrders);
+    if (isSearchDrag) setSearch("");
 
     if (previousStatus === nextStatus) {
       return;
@@ -145,11 +152,33 @@ export default function Orders() {
   };
 
   return (
-    <main className="h-svh w-full bg-bg-dark flex flex-col gap-10 items-center overflow-hidden">
+    <main className="h-svh w-full bg-bg-dark flex flex-col gap-5 items-center overflow-hidden">
       <DragDropProvider
-        onDragOver={(event) => event.preventDefault()}
+        onBeforeDragStart={(event) => {
+          if (isSavingRef.current) event.preventDefault();
+        }}
+        onDragStart={(event) => {
+          beforeDrag.current = ordersDnd;
+          setIsSearchDrag(
+            String(event.operation.source?.id).startsWith("search-"),
+          );
+        }}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}>
-        <div className="relative z-10 justify-self-center flex items-center py-2 px-4 bg-bg-light rounded-sm shadow-md mt-3 mr-60 border border-alt-dark">
+        <DragOverlay dropAnimation={isSearchDrag ? null : undefined}>
+          {(source) => (
+            <Item
+              id={source.id}
+              index={0}
+              order={allOrders.find(
+                (order) => order.id === getDraggedOrderId(source.id),
+              )}
+              column="search">
+              Orden
+            </Item>
+          )}
+        </DragOverlay>
+        <div className="relative z-10 justify-self-center flex items-center py-2 px-4 bg-bg-light rounded-sm shadow-md mr-60 mb-5 border border-alt-dark">
           <input
             className="text-sm font-Manrope focus:outline-none"
             placeholder="Buscar ordenes"
