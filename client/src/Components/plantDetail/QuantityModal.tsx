@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Close } from '../../assets/icons'
 export default function QuantityModal(
   {
     onClose,
@@ -44,13 +43,10 @@ export default function QuantityModal(
     }
   };
   return (
-    <article className='fixed top-0 h-screen w-screen z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end'>
-      <div className='relative h-8/12 w-screen bg-bg-dark rounded-t-md' onClick={(e)=> e.stopPropagation()}>
-        <button className='absolute -top-8 right-2 cursor-pointer' onClick={onClose}>
-          <Close className='text-bg'/>
-        </button>
+    <article className='fixed top-0 h-screen w-screen z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end' onClick={onClose}>
+      <div className='relative h-8/12 w-screen bg-bg-dark rounded-t-md' onClick={(e)=> e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="quantity-modal-title">
         <div className='pt-5 flex flex-col gap-6 h-full'>
-          <span className='font-Outfit font-normal text-black text-xl px-2 '>Elegi Cantidad</span>
+          <span id="quantity-modal-title" className='font-Outfit font-normal text-black text-xl px-2 '>Elegi Cantidad</span>
           {!isCustom ? (
             <div className='flex flex-col justify-center items-center border-b border-black/30 rounded-lg font-Manrope font-normal text-black'>
               {options.map((option, value)=>(

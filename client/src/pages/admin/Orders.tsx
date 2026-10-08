@@ -165,7 +165,9 @@ export default function Orders() {
         }}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}>
-        <DragOverlay dropAnimation={isSearchDrag ? null : undefined}>
+        <DragOverlay
+          className="fixed"
+          dropAnimation={isSearchDrag ? null : undefined}>
           {(source) => (
             <Item
               id={source.id}
