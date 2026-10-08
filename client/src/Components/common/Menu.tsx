@@ -9,16 +9,14 @@ import {
   LogOut,
 } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
 export default function Menu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  if (pathname === "/admin/login") return null;
+  const { logout: endSession } = useAuth();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
   const logout = () => {
-    axios
-      .post(`${API_BASE_URL}/api/auth/logout`, {}, { withCredentials: true })
+    endSession()
       .then(() => {
         navigate("/admin/login");
       })
