@@ -21,13 +21,60 @@ export interface PlantaDetalle extends Planta {
 export interface PlantaResumen {
   id: number;
   name: string;
+  family: string | null;
   price: number;
   image: string | null;
   discount: number;
   label: string;
 }
 
+export interface PlantaInventario {
+  id: number;
+  nombre: string;
+  categoria: string | null;
+  stock: number;
+  precio: number;
+  discount: number;
+  ventas: number;
+}
+
 class PlantaModel extends BaseModel<Planta> {
+  async findAllInventory(): Promise<PlantaInventario[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(`
+      SELECT
+        p.id,
+        p.nombre,
+        p.familia AS categoria,
+        p.stock,
+        p.precio,
+        COALESCE(p.discount, 0) AS discount,
+        COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN d.cantidad ELSE 0 END), 0) AS ventas
+      FROM plantas AS p
+      LEFT JOIN orden_detalle AS d ON d.plantas_id = p.id
+      LEFT JOIN ordenes AS o
+        ON o.id = d.ordenes_id AND o.estado IN ('confirmado', 'entregado')
+      GROUP BY p.id, p.nombre, p.familia, p.stock, p.precio, p.discount
+      ORDER BY p.nombre
+    `);
+    return rows.map((row) => ({
+      id: Number(row.id),
+      nombre: String(row.nombre),
+      categoria: row.categoria === null ? null : String(row.categoria),
+      stock: Number(row.stock),
+      precio: Number(row.precio),
+      discount: Number(row.discount),
+      ventas: Number(row.ventas),
+    }));
+  }
+
+  async addStock(id: number, amount: number): Promise<Planta | null> {
+    await pool.execute(
+      "UPDATE plantas SET stock = stock + ?, actualizado = NOW() WHERE id = ?",
+      [amount, id],
+    );
+    return this.findById(id);
+  }
+
   async findDetailById(id: number): Promise<PlantaDetalle | null> {
     const [plantas] = await pool.execute<RowDataPacket[]>("SELECT * FROM `plantas` WHERE `id` = ?", [id]);
     const planta = plantas[0] as Planta | undefined;
@@ -46,6 +93,7 @@ class PlantaModel extends BaseModel<Planta> {
       `SELECT
         p.\`id\`,
         p.\`nombre\` AS \`name\`,
+        p.\`familia\` AS \`family\`,
         p.\`precio\` AS \`price\`,
         (
           SELECT i.\`url\`

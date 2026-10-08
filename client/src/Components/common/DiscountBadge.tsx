@@ -1,5 +1,10 @@
-
-export default function DiscountBadge({ discount, size }: {discount: number, size: string}) {
+export default function DiscountBadge({
+  discount,
+  size,
+}: {
+  discount: number;
+  size: string;
+}) {
   if (discount <= 0) return null;
 
   /**
@@ -12,20 +17,21 @@ export default function DiscountBadge({ discount, size }: {discount: number, siz
 
   return (
     <>
-      {size === 'big' ? (
+      {size === "big" ? (
         <div className="flex gap-1">
           <span className="w-fit h-6 px-3 bg-primary-dark text-md flex items-center text-white font-Outfit font-light  text-shadow-none">
             {discount}% OFF
           </span>
         </div>
-      ): size === 'mini' && (
-        <div className="flex gap-1 items-center justify-self-end">
-        <span className="w-fit px-2 h-5 bg-primary-dark text-xs text-white font-Outfit font-light">
-          {discount}% OFF
-        </span>
-      </div>
-      )
-      }
+      ) : (
+        size === "mini" && (
+          <div className="flex gap-1 items-center justify-self-end">
+            <span className="w-fit px-2 h-5 bg-primary-dark text-xs/4.5 text-white font-Outfit font-light">
+              {discount}% OFF
+            </span>
+          </div>
+        )
+      )}
     </>
   );
 }

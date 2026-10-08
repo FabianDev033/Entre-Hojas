@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from "react";
 import axios from "axios";
-import { User, Lock } from "../assets/icons";
-import { Logo } from "../assets/images";
+import { User, Lock } from "../../assets/icons";
+import { Logo } from "../../assets/images";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LogIn() {
   const navigate = useNavigate();

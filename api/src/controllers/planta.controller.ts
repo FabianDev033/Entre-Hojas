@@ -20,4 +20,14 @@ export default {
     }
     response.json(await plantaService.findByFamily(familia));
   }),
+  findAllInventory: asyncHandler(async (_request, response) => {
+    response.json(await plantaService.findAllInventory());
+  }),
+  updateStock: asyncHandler(async (request, response) => {
+    const body = request.body as Record<string, unknown> | undefined;
+    if (!body || !Number.isSafeInteger(body.cantidad) || (body.cantidad as number) < 1) {
+      throw new HttpError(400, "cantidad must be a positive integer.");
+    }
+    response.json(await plantaService.addStock(parseId(request.params.id), body.cantidad as number));
+  }),
 };

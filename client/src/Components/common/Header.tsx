@@ -1,6 +1,7 @@
 import { Search, Arrow, Share } from "../../assets/icons";
 import { Logo } from "../../assets/images";
 import { useLocation, useNavigate } from "react-router-dom";
+import ProductSearch from "./ProductSearch";
 
 type HeaderConfig = {
   showBackButton: boolean;
@@ -53,7 +54,7 @@ export default function Header() {
 
   const isCheckout = header.title === "Finaliza tu orden";
   const handleHomeNavigate = () => {
-    pathname === "/" ? navigate("/admin") : navigate("/");
+    navigate(pathname === "/" ? "/admin" : "/");
   };
 
   return (
@@ -66,7 +67,7 @@ export default function Header() {
         }
         pt-1 px-2 bg-primary w-screen h-12
         ${header.showShadow ? "shadow-md border-b border-black/30" : ""}
-        z-10
+        relative z-20
       `}
     >
       {header.showBackButton ? (
@@ -101,15 +102,7 @@ export default function Header() {
       )}
 
       {!isCheckout && header.showSearch && (
-        <div className="justify-self-center flex justify-end items-center w-55 h-8 bg-bg-light rounded-md shadow-md">
-          <input
-            className="w-45 ml-2 text-[0.625rem] focus:outline-none"
-            placeholder="Buscar Entre Hojas"
-          />
-          <div className="w-8 h-full bg-bg flex justify-center items-center rounded-r-md">
-            <Search className="w-5 h-5" />
-          </div>
-        </div>
+        <ProductSearch />
       )}
 
       {!isCheckout && header.showSearchIcon && (

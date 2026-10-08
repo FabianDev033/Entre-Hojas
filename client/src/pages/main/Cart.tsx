@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as Images from "../assets/images";
-import { Arrow2, Checked, Trash } from "../assets/icons";
-import { DiscountBadge } from "../Components/common";
-import { useCart } from "../contexts/CartContext";
-import type { CartStorageItem } from "../utils/cart";
+import * as Images from "../../assets/images";
+import { Arrow2, Checked, Trash } from "../../assets/icons";
+import { DiscountBadge } from "../../Components/common";
+import { useCart } from "../../contexts/CartContext";
+import type { CartStorageItem } from "../../utils/cart";
 
 interface PlantImage {
   id: number;

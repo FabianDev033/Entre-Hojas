@@ -1,0 +1,1 @@
+export { default as LogIn } from "./LogIn";export { default as Dashboard } from "./Dashboard";export { default as Orders } from "./Orders";export { default as Products } from "./Products";export { default as AddProd } from "./AddProd";export { default as Shoppings } from "./Shoppings";

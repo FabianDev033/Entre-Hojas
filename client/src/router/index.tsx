@@ -13,9 +13,10 @@ import {
   Orders,
   Products,
   AddProd,
-  AddStock,
+  Shoppings,
 } from "../pages";
 import { ProductList, PlantDetail } from "../Components/mainLayout";
+import { ProductsProvider } from "../contexts/ProductsContext";
 
 export const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: "/admin/login",
+    element: <LogIn />,
+  },
+  {
     path: "/admin",
     element: <AdminLayout />,
     children: [
@@ -65,24 +70,20 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: "login",
-        element: <LogIn />,
-      },
-      {
         path: "ordenes",
         element: <Orders />,
       },
       {
         path: "productos",
-        element: <Products />,
+        element: <ProductsProvider><Products /></ProductsProvider>,
       },
       {
         path: "agregarProducto",
         element: <AddProd />,
       },
       {
-        path: "actualizarStock",
-        element: <AddStock />,
+        path: "Compras",
+        element: <Shoppings />,
       },
     ],
   },

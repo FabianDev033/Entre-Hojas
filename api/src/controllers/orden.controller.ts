@@ -1,5 +1,6 @@
 import { createCrudController } from "./crud.controller.js";
 import ordenService from "../services/orden.service.js";
+import { paymentMethods, type PaymentMethod } from "../models/orden.model.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { HttpError } from "../utils/http-error.js";
 import { parseId } from "../utils/request.js";
@@ -25,7 +26,7 @@ export default {
       response.json(await ordenService.findAllWithDetails());
     }),
   checkout: asyncHandler(async (request, response) => {
-    const { items, customer } = request.body as Record<string, unknown>;
+    const { items, customer, paymentMethod } = request.body as Record<string, unknown>;
     if (!Array.isArray(items) || items.length === 0) {
       throw new HttpError(400, "items must be a non-empty array.");
     }
@@ -46,6 +47,30 @@ export default {
       typeof contact.telefono !== "string"
     ) {
       throw new HttpError(400, "customer telefono must be a string.");
+    }
+    if (
+      contact.detalleUbicacion !== undefined &&
+      typeof contact.detalleUbicacion !== "string"
+    ) {
+      throw new HttpError(400, "customer detalleUbicacion must be a string.");
+    }
+    if (
+      typeof contact.latitude !== "number" ||
+      !Number.isFinite(contact.latitude) ||
+      contact.latitude < -90 ||
+      contact.latitude > 90 ||
+      typeof contact.longitude !== "number" ||
+      !Number.isFinite(contact.longitude) ||
+      contact.longitude < -180 ||
+      contact.longitude > 180
+    ) {
+      throw new HttpError(400, "customer latitude and longitude must be valid coordinates.");
+    }
+    if (
+      typeof paymentMethod !== "string" ||
+      !paymentMethods.includes(paymentMethod as PaymentMethod)
+    ) {
+      throw new HttpError(400, "paymentMethod is invalid.");
     }
     const parsedItems = items.map((item) => {
       if (!item || typeof item !== "object") {
@@ -77,7 +102,11 @@ export default {
             nombre: contact.nombre.trim(),
             direccion: contact.direccion.trim(),
             telefono: contact.telefono?.trim() || undefined,
+            detalleUbicacion: contact.detalleUbicacion?.trim() || undefined,
+            latitude: contact.latitude,
+            longitude: contact.longitude,
           },
+          paymentMethod: paymentMethod as PaymentMethod,
         }),
       );
   }),

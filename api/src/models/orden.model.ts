@@ -19,13 +19,27 @@ export const orderStatuses = [
 ] as const;
 
 export type OrderStatus = (typeof orderStatuses)[number];
+export const paymentMethods = [
+  "transferencia",
+  "mercado_pago",
+  "efectivo",
+] as const;
+export type PaymentMethod = (typeof paymentMethods)[number];
 export interface OrdenItemInput {
   plantId: number;
   quantity: number;
 }
 export interface OrdenCheckoutInput {
   items: OrdenItemInput[];
-  customer: { nombre: string; telefono?: string; direccion: string };
+  customer: {
+    nombre: string;
+    telefono?: string;
+    direccion: string;
+    detalleUbicacion?: string;
+    latitude: number;
+    longitude: number;
+  };
+  paymentMethod: PaymentMethod;
 }
 export interface OrdenDetalleConsulta {
   plantId: number;
@@ -37,6 +51,10 @@ export interface OrdenDetalleConsulta {
 }
 export interface OrdenConsulta extends Orden {
   direccion: string | null;
+  detalleUbicacion: string | null;
+  latitud: number | null;
+  longitud: number | null;
+  medioPago: PaymentMethod | null;
   cliente: { nombre: string; telefono: string | null };
   items: OrdenDetalleConsulta[];
 }
@@ -50,6 +68,10 @@ interface OrdenJoinRow extends RowDataPacket {
   cliente_nombre: string;
   cliente_telefono: string | null;
   direccion: string | null;
+  detalleUbicacion: string | null;
+  latitud: number | null;
+  longitud: number | null;
+  medioPago: PaymentMethod | null;
   plantId: number;
   planta_nombre: string;
   planta_familia: string | null;
@@ -131,8 +153,17 @@ class OrdenModel extends BaseModel<Orden> {
         ],
       );
       const [orderResult] = await connection.execute<ResultSetHeader>(
-        ` INSERT INTO ordenes (fecha, estado, estado_actualizado, total, clientes_id) VALUES (NOW(), ?, NOW(), ?, ?) `,
-        ["pendiente", total, customerResult.insertId],
+        ` INSERT INTO ordenes (fecha, estado, estado_actualizado, total, clientes_id, direccion_entrega, detalle_ubicacion, latitud, longitud, medio_pago) VALUES (NOW(), ?, NOW(), ?, ?, ?, ?, ?, ?, ?) `,
+        [
+          "pendiente",
+          total,
+          customerResult.insertId,
+          input.customer.direccion,
+          input.customer.detalleUbicacion ?? null,
+          input.customer.latitude,
+          input.customer.longitude,
+          input.paymentMethod,
+        ],
       );
       for (const detail of details) {
         await connection.execute(
@@ -162,7 +193,7 @@ class OrdenModel extends BaseModel<Orden> {
     OrdenConsulta[]
   > {
     const [rows] = await pool.execute<OrdenJoinRow[]>(
-      ` SELECT o.id, o.fecha, o.estado, o.estado_actualizado AS estadoActualizado, o.total, o.clientes_id, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, c.direccion AS direccion, d.plantas_id AS plantId, d.cantidad AS cantidad, d.\`precio unitario\` AS precioUnitario, p.nombre AS planta_nombre, p.familia AS planta_familia FROM ordenes AS o INNER JOIN clientes AS c ON c.id = o.clientes_id INNER JOIN orden_detalle AS d ON d.ordenes_id = o.id INNER JOIN plantas AS p ON p.id = d.plantas_id ORDER BY o.fecha DESC, o.id DESC `,
+      ` SELECT o.id, o.fecha, o.estado, o.estado_actualizado AS estadoActualizado, o.total, o.clientes_id, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, COALESCE(o.direccion_entrega, c.direccion) AS direccion, o.detalle_ubicacion AS detalleUbicacion, o.latitud, o.longitud, o.medio_pago AS medioPago, d.plantas_id AS plantId, d.cantidad AS cantidad, d.\`precio unitario\` AS precioUnitario, p.nombre AS planta_nombre, p.familia AS planta_familia FROM ordenes AS o INNER JOIN clientes AS c ON c.id = o.clientes_id INNER JOIN orden_detalle AS d ON d.ordenes_id = o.id INNER JOIN plantas AS p ON p.id = d.plantas_id ORDER BY o.fecha DESC, o.id DESC `,
     );
     const orders = new Map<number, OrdenConsulta>();
     for (const row of rows) {
@@ -176,6 +207,10 @@ class OrdenModel extends BaseModel<Orden> {
           total: Number(row.total),
           clientes_id: Number(row.clientes_id),
           direccion: row.direccion,
+          detalleUbicacion: row.detalleUbicacion,
+          latitud: row.latitud === null ? null : Number(row.latitud),
+          longitud: row.longitud === null ? null : Number(row.longitud),
+          medioPago: row.medioPago,
           cliente: {
             nombre: row.cliente_nombre,
             telefono: row.cliente_telefono,
@@ -199,7 +234,7 @@ class OrdenModel extends BaseModel<Orden> {
   }
   async findOrderDetailById(id: number): Promise<OrdenConsulta | null> {
     const [rows] = await pool.execute<OrdenJoinRow[]>(
-      ` SELECT o.id, o.fecha, o.estado, o.estado_actualizado AS estadoActualizado, o.total, o.clientes_id, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, c.direccion AS direccion, d.plantas_id AS plantId, d.cantidad AS cantidad, d.\`precio unitario\` AS precioUnitario, p.nombre AS planta_nombre, p.familia AS planta_familia FROM ordenes AS o INNER JOIN clientes AS c ON c.id = o.clientes_id INNER JOIN orden_detalle AS d ON d.ordenes_id = o.id INNER JOIN plantas AS p ON p.id = d.plantas_id WHERE o.id = ? ORDER BY d.plantas_id `,
+      ` SELECT o.id, o.fecha, o.estado, o.estado_actualizado AS estadoActualizado, o.total, o.clientes_id, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, COALESCE(o.direccion_entrega, c.direccion) AS direccion, o.detalle_ubicacion AS detalleUbicacion, o.latitud, o.longitud, o.medio_pago AS medioPago, d.plantas_id AS plantId, d.cantidad AS cantidad, d.\`precio unitario\` AS precioUnitario, p.nombre AS planta_nombre, p.familia AS planta_familia FROM ordenes AS o INNER JOIN clientes AS c ON c.id = o.clientes_id INNER JOIN orden_detalle AS d ON d.ordenes_id = o.id INNER JOIN plantas AS p ON p.id = d.plantas_id WHERE o.id = ? ORDER BY d.plantas_id `,
       [id],
     );
     if (rows.length === 0) {
@@ -214,6 +249,10 @@ class OrdenModel extends BaseModel<Orden> {
       total: Number(first.total),
       clientes_id: Number(first.clientes_id),
       direccion: first.direccion,
+      detalleUbicacion: first.detalleUbicacion,
+      latitud: first.latitud === null ? null : Number(first.latitud),
+      longitud: first.longitud === null ? null : Number(first.longitud),
+      medioPago: first.medioPago,
       cliente: {
         nombre: first.cliente_nombre,
         telefono: first.cliente_telefono,
