@@ -21,6 +21,7 @@ export interface PlantaDetalle extends Planta {
 export interface PlantaResumen {
   id: number;
   name: string;
+  family: string | null;
   price: number;
   image: string | null;
   discount: number;
@@ -92,6 +93,7 @@ class PlantaModel extends BaseModel<Planta> {
       `SELECT
         p.\`id\`,
         p.\`nombre\` AS \`name\`,
+        p.\`familia\` AS \`family\`,
         p.\`precio\` AS \`price\`,
         (
           SELECT i.\`url\`

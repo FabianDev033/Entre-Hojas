@@ -7,6 +7,7 @@ import React from "react";
 import { DiscountBadge } from "../common";
 import { QuantityModal, ShippingModal } from "../plantDetail";
 import { useCart } from "../../contexts/CartContext";
+import ProductSearch from "../common/ProductSearch";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 export interface PlantImage{
@@ -153,7 +154,7 @@ export default function PlantDetail({id}:{id?:number}) {
       {error && <p className="mt-6 font-Manrope text-black">{error}</p>}  
 
       <div className="w-screen h-12 fixed top-0 grid grid-cols-3 items-center bg-primary z-0 shadow-md"></div>
-      <header className="w-screen h-12 fixed top-0 grid grid-cols-3 items-center z-10">        
+      <header className="w-screen h-12 fixed top-0 grid grid-cols-3 items-center z-20">
         <div className="flex justify-center items-center w-10 h-10 cursor-pointer" onClick={() => navigate(-1)}>
           <div className="p-1.5 bg-primary/70 rounded-2xl cursor-pointer">
             <Arrow className="w-4 h-4 cursor-pointer z-20" />
@@ -162,18 +163,11 @@ export default function PlantDetail({id}:{id?:number}) {
         <div
           className={`
             transition-all duration-300 flex gap-5 col-start-2 justify-self-center items-center
-            ${showSearch ? "w-50 opacity-100" : "w-0 opacity-0"}
+            ${showSearch ? "w-50 opacity-100" : "w-0 opacity-0 pointer-events-none"}
           `}
+          inert={!showSearch}
         >
-          <div className="justify-self-end flex items-center w-55 h-8 bg-bg-light rounded-md shadow-md">
-            <input
-              className="w-45 ml-2 text-[0.625rem] focus:outline-none"
-              placeholder="Buscar Entre Hojas"
-            />
-            <div className="w-8 h-full bg-bg flex justify-center items-center rounded-r-md">
-              <Search className="w-5 h-5" />
-            </div>
-          </div>
+          <ProductSearch />
           <div className="p-1.5 bg-primary/70 rounded-2xl cursor-pointer">
             <Share className="w-4 h-4 z-0"/>
           </div>
@@ -188,9 +182,9 @@ export default function PlantDetail({id}:{id?:number}) {
           `}
         >
           <div className="col-start-3 w-full h-8 flex gap-5 items-center">
-            <div className="p-1.5 bg-primary/70 rounded-2xl cursor-pointer">
-              <Search className="w-4 h-4 z-0" onClick={()=>{setShowSearch(true)}}/> 
-            </div>
+            <button type="button" aria-label="Abrir buscador" className="p-1.5 bg-primary/70 rounded-2xl cursor-pointer" onClick={() => setShowSearch(true)}>
+              <Search className="w-4 h-4 z-0" />
+            </button>
             <div className="p-1.5 bg-primary/70 rounded-2xl cursor-pointer">
               <Share className="w-4 h-4 z-0"/>
             </div>
