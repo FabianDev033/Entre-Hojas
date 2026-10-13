@@ -18,12 +18,12 @@ export default function AdminLayout() {
   if (!currentUser) return <Navigate to="/admin/login" replace />;
 
   return (
-    <div className="flex min-h-screen">
-      <aside>
+    <div className="flex h-svh overflow-hidden bg-bg-dark">
+      <aside className="shrink-0">
         <Menu />
       </aside>
 
-      <main className="flex-1">
+      <main className="min-w-0 flex-1">
         <DashboardStatsProvider>
           <OrdersProvider>
             <Outlet />

@@ -72,7 +72,7 @@ export default function Menu() {
     },
   ];
   return (
-    <aside className="w-60 h-svh bg-bg-dark flex flex-col items-center gap-15">
+    <aside className="w-60 h-svh overflow-x-hidden overflow-y-auto overscroll-y-contain bg-bg-dark flex flex-col items-center gap-15">
       <section className="w-11/12 flex flex-col gap-5 mt-3">
         <img
           src={Logo}
@@ -88,7 +88,7 @@ export default function Menu() {
         {menu.map((item, index) => (
           <div
             key={index}
-            className={`flex gap-3 items-center cursor-pointer w-full px-3 py-2 transition-all ease-in-out duration-300 ${pathname === item.path ? "bg-bg-light rounded-md shadow-md text-alt" : null}`}
+            className={`flex gap-3 items-center cursor-pointer w-full px-3 py-2 transition-all ease-in-out duration-300 ${pathname === item.path || (item.path === "/admin/productos" && pathname.startsWith(`${item.path}/`)) ? "bg-bg-light rounded-md shadow-md text-alt" : null}`}
             onClick={item.navigate}>
             {item.icon}
             <span className="text-black">{item.name}</span>
@@ -96,7 +96,7 @@ export default function Menu() {
         ))}
       </section>
       <div
-        className="w-full mt-auto font-Outfit font-normal text-lg text-black flex gap-3 ml-8 mb-2 cursor-pointer hover:text-alt-dark transition-all ease-in-out duration-200"
+        className="w-full mt-auto font-Outfit font-normal text-lg text-black flex gap-3 pl-4 mb-2 cursor-pointer hover:text-alt-dark transition-all ease-in-out duration-200"
         onClick={() => logout()}>
         <LogOut className="w-6 aspect-square " />
         Log out

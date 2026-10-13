@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as Images from "../../assets/images";
+import { productImageUrl } from "../../utils/productImage";
 import { Arrow2, Checked, Trash } from "../../assets/icons";
 import { DiscountBadge } from "../../Components/common";
 import { useCart } from "../../contexts/CartContext";
@@ -230,7 +230,7 @@ export default function Cart() {
             {products.map(({ plant, quantity }) => {
               const detailImage = plant.imagenes.find(({ tipo }) => tipo === "detail");
               const image = detailImage
-                ? Images[detailImage.url as keyof typeof Images]
+                ? productImageUrl(detailImage.url)
                 : undefined;
               const discountedUnitPrice = discountedPrice(plant.precio, plant.discount);
               const quantityOptions = Array.from(

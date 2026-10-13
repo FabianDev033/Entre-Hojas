@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import * as Images from "../../assets/images";
+import { productImageUrl } from "../../utils/productImage";
 import { DiscountBadge, LabelBadge } from "../common";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { filterPlants } from "../../utils/productSearch";
@@ -12,6 +12,7 @@ export interface Plant {
   image: string | null;
   discount: number;
   label: string;
+  labels?: string[];
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
@@ -47,7 +48,7 @@ export default function ProductList({ family }: { family?: string }) {
         );
         setList(
           selectedFamily === "Ofertas"
-            ? response.data.filter((plant) => plant.label === "oferta")
+            ? response.data.filter((plant) => (plant.labels ?? [plant.label]).includes("oferta"))
             : response.data,
         );
       } catch (requestError) {
@@ -114,7 +115,7 @@ export default function ProductList({ family }: { family?: string }) {
               className="w-full max-w-45 h-65 mb-3 relative bg-[linear-gradient(to_top,#F2EBE3_0%,#F2EBE3_25%,#D8CAB8_100%)] flex flex-col shadow-lg rounded-md cursor-pointer hover:shadow-2xl transition duration-300 ease-in-out">
               {plant.image && (
                 <img
-                  src={Images[plant.image as keyof typeof Images]}
+                  src={productImageUrl(plant.image)}
                   alt={plant.name}
                   className="z-0 max-h-9/12 object-contain"
                 />

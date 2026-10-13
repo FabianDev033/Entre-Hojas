@@ -8,6 +8,7 @@ import { DiscountBadge } from "../common";
 import { QuantityModal, ShippingModal } from "../plantDetail";
 import { useCart } from "../../contexts/CartContext";
 import ProductSearch from "../common/ProductSearch";
+import { productImageUrl } from "../../utils/productImage";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 export interface PlantImage{
@@ -205,7 +206,7 @@ export default function PlantDetail({id}:{id?:number}) {
                 {detailImages?.map((imagen) => (
                   <img
                     key={imagen.id}
-                    src={Images[imagen.url as keyof typeof Images]}
+                    src={productImageUrl(imagen.url)}
                     alt={plant.nombre}
                     className="w-full shrink-0 snap-center object-cover"
                   />
