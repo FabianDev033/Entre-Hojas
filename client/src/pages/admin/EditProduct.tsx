@@ -41,7 +41,8 @@ const selectFields = [
     label: "Cuidados",
     options: ["Fácil", "Medio", "Difícil"],
   },
-] as const;
+  { name: "petFriendly", label: "Apta para mascotas", options: ["Sí", "No"] },
+] as const satisfies readonly { name: keyof Plant; label: string; options: readonly string[] }[];
 
 type PlantImage = { id: number; url: string; tipo: string };
 type Plant = {
@@ -60,6 +61,7 @@ type Plant = {
   resistencia: string | null;
   tamano: string | null;
   cuidado: string | null;
+  petFriendly: boolean | null;
   descripcion: string | null;
   imagenes: PlantImage[];
 };
@@ -67,7 +69,10 @@ type PendingImage = { file: File; preview: string };
 
 function formValues(plant: Plant) {
   const selectedValue = (name: (typeof selectFields)[number]["name"]) => {
-    const value = plant[name]?.trim() ?? "";
+    const rawValue = plant[name];
+    const value = typeof rawValue === "boolean"
+      ? (rawValue ? "Sí" : "No")
+      : (rawValue?.trim() ?? "");
     const field = selectFields.find((option) => option.name === name)!;
     return (
       field.options.find(
@@ -89,6 +94,7 @@ function formValues(plant: Plant) {
     resistencia: selectedValue("resistencia"),
     tamano: selectedValue("tamano"),
     cuidado: selectedValue("cuidado"),
+    petFriendly: selectedValue("petFriendly"),
     descripcion: plant.descripcion ?? "",
   };
 }
@@ -248,6 +254,7 @@ function ProductForm({ initialPlant }: { initialPlant: Plant }) {
         ...form,
         precio: Number(form.precio),
         discount: Number(form.discount),
+        petFriendly: form.petFriendly === "" ? null : form.petFriendly === "Sí",
         imagenesEliminadas: removedIds,
       }),
     );

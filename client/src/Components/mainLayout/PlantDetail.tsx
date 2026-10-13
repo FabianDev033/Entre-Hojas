@@ -32,6 +32,7 @@ interface Plant {
   resistencia: string;
   tamano: string;
   cuidado: string;
+  petFriendly: boolean | null;
   descripcion: string;
   imagenes: PlantImage[];
 }
@@ -99,6 +100,7 @@ export default function PlantDetail({id}:{id?:number}) {
     {label: "Resistencia", value: plant?.resistencia},
     {label: "Tamaño", value: plant?.tamano},
     {label: "Cuidados", value: plant?.cuidado},
+    {label: "Apta para mascotas", value: plant?.petFriendly == null ? "Sin especificar" : plant.petFriendly ? "Sí" : "No"},
   ]
   
 
