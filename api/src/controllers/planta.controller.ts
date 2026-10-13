@@ -4,12 +4,26 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { HttpError } from "../utils/http-error.js";
 import { parseId } from "../utils/request.js";
 import type { Planta } from "../models/planta.model.js";
+import { parsePlantEdit } from "../utils/plant-edit.js";
 
 const plantFields = ["nombre", "familia", "precio", "discount", "stock", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "descripcion"] as const satisfies readonly (keyof Planta & string)[];
 const crudController = createCrudController(plantaService, plantFields, ["nombre", "precio", "stock"]);
 
 export default {
   ...crudController,
+  findEditById: asyncHandler(async (request, response) => {
+    response.json(await plantaService.findEditById(parseId(request.params.id)));
+  }),
+  saveEdit: asyncHandler(async (request, response) => {
+    let input: unknown;
+    try {
+      input = JSON.parse(request.body?.datos);
+    } catch {
+      throw new HttpError(400, "Datos de producto inválidos.");
+    }
+    const { data, removedImageIds } = parsePlantEdit(input);
+    response.json(await plantaService.saveEdit(parseId(request.params.id), data, removedImageIds, (request.files as Express.Multer.File[] | undefined) ?? []));
+  }),
   findById: asyncHandler(async (request, response) => {
     response.json(await plantaService.findDetailById(parseId(request.params.id)));
   }),

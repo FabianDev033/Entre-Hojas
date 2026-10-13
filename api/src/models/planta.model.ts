@@ -1,6 +1,8 @@
 import { BaseModel } from "./base.model.js";
 import type { RowDataPacket } from "mysql2";
 import pool from "../config/database.js";
+import type { PlantEditData } from "../utils/plant-edit.js";
+import { HttpError } from "../utils/http-error.js";
 
 export interface Planta {
   id: number; nombre: string; familia: string | null; precio: number; discount: number; stock: number;
@@ -15,7 +17,12 @@ export interface ImagenDePlanta {
 }
 
 export interface PlantaDetalle extends Planta {
+  etiquetas: string[];
   imagenes: ImagenDePlanta[];
+}
+
+export interface PlantaEdicion extends PlantaDetalle {
+  ventas: number;
 }
 
 export interface PlantaResumen {
@@ -26,6 +33,7 @@ export interface PlantaResumen {
   image: string | null;
   discount: number;
   label: string;
+  labels: string[];
 }
 
 export interface PlantaInventario {
@@ -39,6 +47,53 @@ export interface PlantaInventario {
 }
 
 class PlantaModel extends BaseModel<Planta> {
+  async findEditById(id: number): Promise<PlantaEdicion | null> {
+    const plant = await this.findDetailById(id);
+    if (!plant) return null;
+    const [rows] = await pool.execute<RowDataPacket[]>(`
+      SELECT COALESCE(SUM(d.cantidad), 0) AS ventas
+      FROM orden_detalle d JOIN ordenes o ON o.id = d.ordenes_id
+      WHERE d.plantas_id = ? AND o.estado IN ('confirmado', 'entregado')
+    `, [id]);
+    return { ...plant, ventas: Number(rows[0].ventas) };
+  }
+
+  async saveEdit(id: number, data: PlantEditData, removedIds: number[], newUrls: string[]): Promise<string[]> {
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      const [plants] = await connection.execute<RowDataPacket[]>("SELECT id FROM plantas WHERE id = ? FOR UPDATE", [id]);
+      if (!plants.length) throw new HttpError(404, "No se encontró la planta.");
+      const [images] = await connection.execute<RowDataPacket[]>("SELECT id, url FROM imagenes WHERE plantas_id = ? FOR UPDATE", [id]);
+      if (removedIds.some((imageId) => !images.some((image) => image.id === imageId))) {
+        throw new HttpError(400, "Una imagen a quitar ya no pertenece a esta planta. Recargá la página.");
+      }
+      const fields = this.fields.filter((field) => field !== "stock");
+      await connection.execute(
+        `UPDATE plantas SET ${fields.map((field) => `\`${field}\` = ?`).join(", ")}, etiquetas = ?, actualizado = NOW() WHERE id = ?`,
+        [...fields.map((field) => data[field]), JSON.stringify(data.etiquetas), id],
+      );
+      for (const imageId of removedIds) {
+        await connection.execute("DELETE FROM imagenes WHERE id = ? AND plantas_id = ?", [imageId, id]);
+      }
+      for (const url of newUrls) {
+        await connection.execute("INSERT INTO imagenes (url, plantas_id, tipo) VALUES (?, ?, 'detail')", [url, id]);
+      }
+      const unusedUrls: string[] = [];
+      for (const image of images.filter((image) => removedIds.includes(image.id))) {
+        const [references] = await connection.execute<RowDataPacket[]>("SELECT id FROM imagenes WHERE url = ? LIMIT 1", [image.url]);
+        if (!references.length) unusedUrls.push(String(image.url));
+      }
+      await connection.commit();
+      return unusedUrls;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
   async findAllInventory(): Promise<PlantaInventario[]> {
     const [rows] = await pool.query<RowDataPacket[]>(`
       SELECT
@@ -77,7 +132,7 @@ class PlantaModel extends BaseModel<Planta> {
 
   async findDetailById(id: number): Promise<PlantaDetalle | null> {
     const [plantas] = await pool.execute<RowDataPacket[]>("SELECT * FROM `plantas` WHERE `id` = ?", [id]);
-    const planta = plantas[0] as Planta | undefined;
+    const planta = plantas[0] as (Planta & { etiquetas: string[] | null }) | undefined;
     if (!planta) return null;
 
     const [imagenes] = await pool.execute<RowDataPacket[]>(
@@ -85,7 +140,11 @@ class PlantaModel extends BaseModel<Planta> {
       [id],
     );
 
-    return { ...planta, imagenes: imagenes as ImagenDePlanta[] };
+    return {
+      ...planta,
+      etiquetas: planta.etiquetas ?? (planta.etiqueta ? [planta.etiqueta] : []),
+      imagenes: imagenes as ImagenDePlanta[],
+    };
   }
 
   async findByFamily(familia: string): Promise<PlantaResumen[]> {
@@ -103,7 +162,8 @@ class PlantaModel extends BaseModel<Planta> {
           LIMIT 1
         ) AS \`image\`,
         COALESCE(p.\`discount\`, 0) AS \`discount\`,
-        COALESCE(p.\`etiqueta\`, '') AS \`label\`
+        COALESCE(p.\`etiqueta\`, '') AS \`label\`,
+        COALESCE(p.\`etiquetas\`, IF(COALESCE(p.\`etiqueta\`, '') = '', JSON_ARRAY(), JSON_ARRAY(p.\`etiqueta\`))) AS \`labels\`
       FROM \`plantas\` AS p
       WHERE (? = 'AllPlants' OR p.\`familia\` = ?)
       ORDER BY p.\`nombre\``,
