@@ -3,6 +3,9 @@ import { test } from "node:test";
 import { readFile, readdir, unlink } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { join } from "node:path";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
 import type { AddressInfo } from "node:net";
 import type { PlantaEdicion } from "../src/models/planta.model.js";
 
@@ -58,6 +61,7 @@ test("product editor persists changes, protects stock and rolls back invalid ima
     assert.equal(saved.iluminacion, input.iluminacion);
     assert.equal(saved.resistencia, input.resistencia);
     assert.equal(saved.cuidado, input.cuidado);
+    assert.equal(saved.petFriendly, null, "existing plants remain unspecified");
     assert.equal(saved.imagenes.length, 2);
     const added = saved.imagenes.find((image) => image.id !== original.id)!;
     createdUrls.push(added.url);
@@ -114,6 +118,58 @@ test("product editor persists changes, protects stock and rolls back invalid ima
     assert.equal(response.status, 200);
     assert.deepEqual((await response.json() as PlantaEdicion).etiquetas, []);
     assert.equal((await plants.findByFamily("AllPlants")).find((plant) => plant.id === first.id)?.label, "");
+
+    for (const petFriendly of [true, false, null]) {
+      response = await upload(first.id, { ...input, petFriendly });
+      assert.equal(response.status, 200, await response.clone().text());
+      assert.equal((await response.json() as PlantaEdicion).petFriendly, petFriendly);
+      for (const path of [`/api/productos/${first.id}/edicion`, `/api/plantas/${first.id}`]) {
+        response = await fetch(baseUrl + path, { headers });
+        assert.equal((await response.json() as PlantaEdicion).petFriendly, petFriendly);
+      }
+      assert.equal((await plants.findById(first.id))?.petFriendly, petFriendly);
+      assert.equal((await plants.findAll()).find((plant) => plant.id === first.id)?.petFriendly, petFriendly);
+    }
+
+    response = await upload(first.id, { ...input, petFriendly: true });
+    assert.equal(response.status, 200);
+    response = await upload(first.id, input);
+    assert.equal(response.status, 200);
+    assert.equal((await response.json() as PlantaEdicion).petFriendly, true, "older editors preserve pet suitability");
+
+    // Re-running the migration must not reset values already entered by an admin.
+    for (let run = 0; run < 2; run++) {
+      await promisify(execFile)(process.execPath, ["--import", "tsx", "src/scripts/migrate-pet-friendly.ts"], {
+        cwd: fileURLToPath(new URL("../", import.meta.url)),
+      });
+      assert.equal((await plants.findById(first.id))?.petFriendly, true);
+    }
+
+    for (const petFriendly of ["false", 1, "Sí"]) {
+      response = await upload(first.id, { ...input, petFriendly });
+      assert.equal(response.status, 400);
+      response = await fetch(`${baseUrl}/api/plantas/${first.id}`, {
+        method: "PATCH", headers: { ...headers, "content-type": "application/json" },
+        body: JSON.stringify({ petFriendly }),
+      });
+      assert.equal(response.status, 400);
+      assert.equal((await plants.findById(first.id))?.petFriendly, true);
+    }
+    response = await fetch(`${baseUrl}/api/plantas/${first.id}`, {
+      method: "PATCH", headers: { ...headers, "content-type": "application/json" },
+      body: JSON.stringify({ petFriendly: false }),
+    });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json() as PlantaEdicion).petFriendly, false);
+
+    response = await fetch(`${baseUrl}/api/plantas`, {
+      method: "POST", headers: { ...headers, "content-type": "application/json" },
+      body: JSON.stringify({ nombre: `Mascotas ${randomUUID()}`, precio: 100, stock: 1, petFriendly: true }),
+    });
+    assert.equal(response.status, 201, await response.clone().text());
+    const created = await response.json() as PlantaEdicion;
+    createdIds.push(created.id);
+    assert.equal(created.petFriendly, true);
   } finally {
     for (const id of createdIds) {
       const remaining = await plants.findDetailById(id);

@@ -8,6 +8,7 @@ export interface Planta {
   id: number; nombre: string; familia: string | null; precio: number; discount: number; stock: number;
   etiqueta: string | null; origen: string | null; tipo: string | null; iluminacion: string | null;
   resistencia: string | null; tamano: string | null; cuidado: string | null; descripcion: string | null;
+  petFriendly: boolean | null;
 }
 
 export interface ImagenDePlanta {
@@ -47,6 +48,20 @@ export interface PlantaInventario {
 }
 
 class PlantaModel extends BaseModel<Planta> {
+  // MySQL returns BOOLEAN columns as 0/1. Keep the JSON API boolean-valued.
+  private normalizePlant<T extends Planta>(plant: T): T {
+    return { ...plant, petFriendly: plant.petFriendly == null ? null : Boolean(plant.petFriendly) };
+  }
+
+  async findAll(): Promise<Planta[]> {
+    return (await super.findAll()).map((plant) => this.normalizePlant(plant));
+  }
+
+  async findById(id: number): Promise<Planta | null> {
+    const plant = await super.findById(id);
+    return plant ? this.normalizePlant(plant) : null;
+  }
+
   async findEditById(id: number): Promise<PlantaEdicion | null> {
     const plant = await this.findDetailById(id);
     if (!plant) return null;
@@ -68,10 +83,12 @@ class PlantaModel extends BaseModel<Planta> {
       if (removedIds.some((imageId) => !images.some((image) => image.id === imageId))) {
         throw new HttpError(400, "Una imagen a quitar ya no pertenece a esta planta. Recargá la página.");
       }
-      const fields = this.fields.filter((field) => field !== "stock");
+      const fields = this.fields
+        .filter((field) => field !== "stock")
+        .filter((field) => data[field] !== undefined);
       await connection.execute(
         `UPDATE plantas SET ${fields.map((field) => `\`${field}\` = ?`).join(", ")}, etiquetas = ?, actualizado = NOW() WHERE id = ?`,
-        [...fields.map((field) => data[field]), JSON.stringify(data.etiquetas), id],
+        [...fields.map((field) => data[field] ?? null), JSON.stringify(data.etiquetas), id],
       );
       for (const imageId of removedIds) {
         await connection.execute("DELETE FROM imagenes WHERE id = ? AND plantas_id = ?", [imageId, id]);
@@ -141,7 +158,7 @@ class PlantaModel extends BaseModel<Planta> {
     );
 
     return {
-      ...planta,
+      ...this.normalizePlant(planta),
       etiquetas: planta.etiquetas ?? (planta.etiqueta ? [planta.etiqueta] : []),
       imagenes: imagenes as ImagenDePlanta[],
     };
@@ -173,7 +190,7 @@ class PlantaModel extends BaseModel<Planta> {
   }
 
   protected readonly table = "plantas";
-  protected readonly fields = ["nombre", "familia", "precio", "discount", "stock", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "descripcion"] as const;
+  protected readonly fields = ["nombre", "familia", "precio", "discount", "stock", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "petFriendly", "descripcion"] as const;
 }
 
 export default new PlantaModel();

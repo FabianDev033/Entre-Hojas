@@ -7,6 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "create-user": "tsx src/scripts/create-user.ts",
     "migrate:product-labels": "tsx src/scripts/migrate-product-labels.ts",
+    "migrate:pet-friendly": "tsx src/scripts/migrate-pet-friendly.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },

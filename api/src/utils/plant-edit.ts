@@ -1,7 +1,11 @@
 import type { Planta } from "../models/planta.model.js";
 import { HttpError } from "./http-error.js";
+import { parsePetFriendly } from "./pet-friendly.js";
 
-export type PlantEditData = Omit<Planta, "id" | "stock"> & { etiquetas: string[] };
+export type PlantEditData = Omit<Planta, "id" | "stock" | "petFriendly"> & {
+  etiquetas: string[];
+  petFriendly?: boolean | null;
+};
 
 const labels = ["", "promo", "oferta", "ultimo", "top", "nuevo", "volvio", "elegido", "limitada", "regalo"];
 const textLimits = {
@@ -20,7 +24,7 @@ export function parsePlantEdit(body: unknown): { data: PlantEditData; removedIma
     throw new HttpError(400, "Datos de producto inválidos.");
   }
   const input = body as Record<string, unknown>;
-  const allowedFields = [...Object.keys(textLimits), "precio", "discount", "etiquetas", "imagenesEliminadas"];
+  const allowedFields = [...Object.keys(textLimits), "precio", "discount", "etiquetas", "petFriendly", "imagenesEliminadas"];
   if (Object.keys(input).some((key) => !allowedFields.includes(key))) {
     throw new HttpError(400, "La edición no admite stock, ventas ni otros campos adicionales.");
   }
@@ -29,6 +33,8 @@ export function parsePlantEdit(body: unknown): { data: PlantEditData; removedIma
     nombre: "", precio: 0, discount: 0, familia: null, etiqueta: null, origen: null,
     tipo: null, iluminacion: null, resistencia: null, tamano: null, cuidado: null, descripcion: null, etiquetas: [],
   };
+  // Older editors omit the field: preserve the stored value in that case.
+  if (input.petFriendly !== undefined) data.petFriendly = parsePetFriendly(input.petFriendly);
   for (const [field, limit] of Object.entries(textLimits)) {
     const key = field as keyof typeof textLimits;
     const value = input[key];

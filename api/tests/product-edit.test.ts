@@ -23,6 +23,16 @@ test("stock, sales and unknown fields cannot be submitted through the editor", (
   }
 });
 
+test("pet suitability accepts booleans and null, rejects coercion and supports older editors", () => {
+  for (const petFriendly of [true, false, null]) {
+    assert.equal(parsePlantEdit({ ...validInput, petFriendly }).data.petFriendly, petFriendly);
+  }
+  for (const petFriendly of ["Sí", "No", "true", "false", "", 0, 1, [], {}]) {
+    assert.throws(() => parsePlantEdit({ ...validInput, petFriendly }), /petFriendly/);
+  }
+  assert.ok(!Object.hasOwn(parsePlantEdit(validInput).data, "petFriendly"));
+});
+
 test("plant attributes accept only the defined choices and normalize case and accents", () => {
   const { data } = parsePlantEdit({ ...validInput, tamano: "pequeño", iluminacion: "media", resistencia: "mucha", cuidado: "facil" });
   assert.equal(data.tamano, "Pequeño");

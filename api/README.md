@@ -12,7 +12,8 @@ Express + TypeScript API using an MVC-style structure:
 1. Import `entreHojas.sql` into MySQL (it creates the `mydb` database).
 2. Copy `.env.example` to `.env` and set the MySQL credentials.
 3. Run `pnpm migrate:product-labels` to enable multiple labels (safe to run again).
-4. Run `pnpm dev` from this directory.
+4. Run `pnpm migrate:pet-friendly` to add the optional pet suitability field (safe to run again).
+5. Run `pnpm dev` from this directory.
 
 The health check is `GET /health`. All application endpoints are under `/api`.
 
@@ -25,6 +26,15 @@ The editor uses fixed choices for size (`Pequeño`, `Mediano`, `Grande`), light 
 resistance (`Poca`, `Media`, `Mucha`), and care (`Fácil`, `Medio`, `Difícil`).
 These fields can also be left unspecified. Previous descriptions outside these
 choices remain visible until an administrator selects a valid replacement.
+
+Pet suitability uses `petFriendly`: `true` (Sí), `false` (No), or `null`
+(Sin especificar). The migration adds a nullable BOOLEAN column without assigning
+suitability to existing plants. Run it before deploying the updated API and client.
+The editor and the plant creation/update endpoints accept only JSON booleans or
+null; strings such as `"Sí"` or `"false"` are rejected. Omitting the field when
+updating preserves its current value. Plant list, detail and editor responses
+return booleans or null, converting MySQL's 0/1 values. The storefront displays
+the value in the product details.
 
 The update accepts multipart form data: `datos` contains the editable plant fields
 as JSON plus `imagenesEliminadas` (image IDs), and `imagenes` contains optional files.

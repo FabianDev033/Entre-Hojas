@@ -6,6 +6,7 @@ import { mkdir, writeFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { uploadsDirectory } from "../config/uploads.js";
 import type { PlantEditData } from "../utils/plant-edit.js";
+import { parsePetFriendly } from "../utils/pet-friendly.js";
 
 function imageExtension(file: Express.Multer.File): string {
   const bytes = file.buffer;
@@ -27,6 +28,16 @@ async function removeUpload(url: string) {
 class PlantaService extends BaseService<Planta> {
   constructor() {
     super(plantaModel);
+  }
+
+  create(data: Partial<Planta>) {
+    if (data.petFriendly !== undefined) parsePetFriendly(data.petFriendly);
+    return super.create(data);
+  }
+
+  update(id: number, data: Partial<Planta>) {
+    if (data.petFriendly !== undefined) parsePetFriendly(data.petFriendly);
+    return super.update(id, data);
   }
 
   async findEditById(id: number) {
