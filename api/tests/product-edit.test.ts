@@ -1,12 +1,27 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { parsePlantEdit } from "../src/utils/plant-edit.js";
+import { parsePlantCreate, parsePlantEdit } from "../src/utils/plant-edit.js";
 
 const validInput = {
   nombre: "Potus", familia: "Potus", precio: 7000, discount: 0, etiqueta: "", etiquetas: [],
   origen: null, tipo: null, iluminacion: null, resistencia: null, tamano: null,
   cuidado: null, descripcion: null, imagenesEliminadas: [],
 };
+
+test("creation requires a valid initial stock and cannot set sales or remove existing images", () => {
+  for (const stock of [0, 7, 2_147_483_647]) {
+    const data = parsePlantCreate({ ...validInput, stock });
+    assert.equal(data.stock, stock);
+    assert.equal(data.petFriendly, null);
+  }
+  for (const stock of [undefined, null, "7", -1, 1.5, NaN, Infinity, 2_147_483_648]) {
+    assert.throws(() => parsePlantCreate({ ...validInput, stock }), /stock inicial/);
+  }
+  assert.throws(() => parsePlantCreate(null));
+  assert.throws(() => parsePlantCreate({ ...validInput, stock: 1, ventas: 8 }));
+  assert.throws(() => parsePlantCreate({ ...validInput, stock: 1, imagenesEliminadas: [1] }));
+  assert.throws(() => parsePlantCreate({ ...validInput, stock: 1, nombre: " " }));
+});
 
 test("editing accepts all nine labels, preserves text and normalizes empty fields", () => {
   for (const etiqueta of ["", "promo", "oferta", "ultimo", "top", "nuevo", "volvio", "elegido", "limitada", "regalo"]) {

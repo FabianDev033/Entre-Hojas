@@ -7,6 +7,23 @@ export type PlantEditData = Omit<Planta, "id" | "stock" | "petFriendly"> & {
   petFriendly?: boolean | null;
 };
 
+export type PlantCreateData = PlantEditData & { stock: number };
+
+export function parsePlantCreate(body: unknown): PlantCreateData {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpError(400, "Datos de producto inválidos.");
+  }
+  const { stock, ...input } = body as Record<string, unknown>;
+  if (typeof stock !== "number" || !Number.isInteger(stock) || stock < 0 || stock > 2_147_483_647) {
+    throw new HttpError(400, "El stock inicial debe ser un entero entre 0 y 2147483647.");
+  }
+  const { data, removedImageIds } = parsePlantEdit(input);
+  if (removedImageIds.length) {
+    throw new HttpError(400, "Un producto nuevo no tiene imágenes para quitar.");
+  }
+  return { ...data, petFriendly: data.petFriendly ?? null, stock };
+}
+
 const labels = ["", "promo", "oferta", "ultimo", "top", "nuevo", "volvio", "elegido", "limitada", "regalo"];
 const textLimits = {
   nombre: 100, familia: 100, etiqueta: 50, origen: 100, tipo: 50,

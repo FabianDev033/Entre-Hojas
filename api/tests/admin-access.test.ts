@@ -48,6 +48,7 @@ const protectedRoutes = [
   ["GET", "/productos/1/edicion"],
   ["PATCH", "/productos/1/edicion"],
   ["POST", "/plantas"],
+  ["POST", "/productos"],
   ["PATCH", "/plantas/1"],
   ["DELETE", "/productos/1"],
   ["POST", "/imagenes"],

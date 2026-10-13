@@ -41,6 +41,41 @@ test("product editor persists changes, protects stock and rolls back invalid ima
   };
 
   try {
+    for (const stock of [0, 7]) {
+      const body = new FormData();
+      body.append("datos", JSON.stringify({ ...input, stock, petFriendly: true, etiquetas: ["oferta", "nuevo"] }));
+      body.append("imagenes", new Blob([photo], { type: "image/webp" }), "photo.webp");
+      const response = await fetch(`${baseUrl}/api/productos`, { method: "POST", headers, body });
+      assert.equal(response.status, 201, await response.clone().text());
+      const created = await response.json() as PlantaEdicion;
+      createdIds.push(created.id);
+      assert.equal(created.stock, stock);
+      assert.equal(created.ventas, 0);
+      assert.equal(created.petFriendly, true);
+      assert.deepEqual(created.etiquetas, ["oferta", "nuevo"]);
+      assert.equal(created.etiqueta, "oferta");
+      assert.equal(created.imagenes.length, 1);
+      assert.deepEqual(Buffer.from(await (await fetch(baseUrl + created.imagenes[0].url)).arrayBuffer()), photo);
+      const reloaded = await plants.findEditById(created.id);
+      assert.equal(reloaded?.stock, stock);
+      assert.equal(reloaded?.ventas, 0);
+      const listed = (await plants.findAllInventory()).find((plant) => plant.id === created.id);
+      assert.equal(listed?.stock, stock);
+      assert.equal(listed?.ventas, 0);
+    }
+    const failedName = `No crear ${randomUUID()}`;
+    for (const invalid of [{ stock: -1 }, { stock: 1, ventas: 5 }]) {
+      const body = new FormData();
+      body.append("datos", JSON.stringify({ ...input, nombre: failedName, ...invalid }));
+      const response = await fetch(`${baseUrl}/api/productos`, { method: "POST", headers, body });
+      assert.equal(response.status, 400);
+    }
+    const invalidPhoto = new FormData();
+    invalidPhoto.append("datos", JSON.stringify({ ...input, nombre: failedName, stock: 1 }));
+    invalidPhoto.append("imagenes", new Blob(["invalid image"], { type: "image/webp" }), "invalid.webp");
+    assert.equal((await fetch(`${baseUrl}/api/productos`, { method: "POST", headers, body: invalidPhoto })).status, 400);
+    assert.ok(!(await plants.findAll()).some((plant) => plant.nombre === failedName), "invalid creations leave no product behind");
+
     const first = await plants.create({ nombre: input.nombre, precio: 500, stock: 7, etiqueta: "top" });
     createdIds.push(first.id);
     assert.deepEqual((await plants.findEditById(first.id))?.etiquetas, ["top"], "existing single labels remain assigned");

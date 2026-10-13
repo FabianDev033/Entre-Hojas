@@ -22,6 +22,14 @@ The health check is `GET /health`. All application endpoints are under `/api`.
 The administrative editor uses `GET /api/productos/:id/edicion` and
 `PATCH /api/productos/:id/edicion`, both requiring an administrator session.
 Stock and sales are read-only in this editor; stock additions keep using their existing endpoint.
+The add-product page reuses this form with empty fields, discount and initial stock
+set to zero. Initial stock is editable only during creation; sales start at zero
+and continue to be calculated from confirmed or delivered orders.
+Creation uses authenticated `POST /api/productos` with multipart data in the same
+format as editing, adding a required integer `stock` between 0 and 2147483647.
+`imagenesEliminadas` must be empty. Product data, labels and image records are
+created in one transaction, and failed saves remove newly uploaded files.
+The existing JSON creation endpoint remains supported.
 The editor uses fixed choices for size (`Pequeño`, `Mediano`, `Grande`), light and
 resistance (`Poca`, `Media`, `Mucha`), and care (`Fácil`, `Medio`, `Difícil`).
 These fields can also be left unspecified. Previous descriptions outside these

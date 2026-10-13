@@ -29,6 +29,7 @@ router.post("/ordenes/checkout", ordenController.checkout);
 router.get("/ordenes/:id", ordenController.findOrderDetailById);
 
 router.use(requireAuth);
+router.post("/productos", uploadImages, plantaController.createProduct);
 router.get("/dashboard", dashboardController.getDashboard);
 router.get("/productos/:id/edicion", plantaController.findEditById);
 router.patch("/productos/:id/edicion", uploadImages, plantaController.saveEdit);

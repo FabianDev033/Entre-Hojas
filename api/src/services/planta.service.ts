@@ -5,7 +5,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, writeFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { uploadsDirectory } from "../config/uploads.js";
-import type { PlantEditData } from "../utils/plant-edit.js";
+import type { PlantCreateData, PlantEditData } from "../utils/plant-edit.js";
 import { parsePetFriendly } from "../utils/pet-friendly.js";
 
 function imageExtension(file: Express.Multer.File): string {
@@ -47,22 +47,30 @@ class PlantaService extends BaseService<Planta> {
   }
 
   async saveEdit(id: number, data: PlantEditData, removedIds: number[], files: Express.Multer.File[]) {
+    const unusedUrls = await this.withUploads(files, (urls) => plantaModel.saveEdit(id, data, removedIds, urls));
+    await Promise.all(unusedUrls.map(removeUpload));
+    return this.findEditById(id);
+  }
+
+  async createWithImages(data: PlantCreateData, files: Express.Multer.File[]) {
+    const id = await this.withUploads(files, (urls) => plantaModel.createWithImages(data, urls));
+    return this.findEditById(id);
+  }
+
+  private async withUploads<T>(files: Express.Multer.File[], save: (urls: string[]) => Promise<T>): Promise<T> {
     const uploads = files.map((file) => ({ file, url: `/uploads/${randomUUID()}.${imageExtension(file)}` }));
     const writtenUrls: string[] = [];
-    let unusedUrls: string[];
     try {
       if (uploads.length) await mkdir(uploadsDirectory, { recursive: true });
       for (const { file, url } of uploads) {
         writtenUrls.push(url);
         await writeFile(join(uploadsDirectory, url.slice("/uploads/".length)), file.buffer, { flag: "wx" });
       }
-      unusedUrls = await plantaModel.saveEdit(id, data, removedIds, writtenUrls);
+      return await save(writtenUrls);
     } catch (error) {
       await Promise.all(writtenUrls.map(removeUpload));
       throw error;
     }
-    await Promise.all(unusedUrls.map(removeUpload));
-    return this.findEditById(id);
   }
 
   async findDetailById(id: number) {

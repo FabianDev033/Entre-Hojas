@@ -1,7 +1,7 @@
 import { BaseModel } from "./base.model.js";
-import type { RowDataPacket } from "mysql2";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../config/database.js";
-import type { PlantEditData } from "../utils/plant-edit.js";
+import type { PlantCreateData, PlantEditData } from "../utils/plant-edit.js";
 import { HttpError } from "../utils/http-error.js";
 
 export interface Planta {
@@ -103,6 +103,27 @@ class PlantaModel extends BaseModel<Planta> {
       }
       await connection.commit();
       return unusedUrls;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
+  async createWithImages(data: PlantCreateData, newUrls: string[]): Promise<number> {
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      const [result] = await connection.execute<ResultSetHeader>(
+        `INSERT INTO plantas (${this.fields.map((field) => `\`${field}\``).join(", ")}, etiquetas) VALUES (${this.fields.map(() => "?").join(", ")}, ?)`,
+        [...this.fields.map((field) => data[field] ?? null), JSON.stringify(data.etiquetas)],
+      );
+      for (const url of newUrls) {
+        await connection.execute("INSERT INTO imagenes (url, plantas_id, tipo) VALUES (?, ?, 'detail')", [url, result.insertId]);
+      }
+      await connection.commit();
+      return result.insertId;
     } catch (error) {
       await connection.rollback();
       throw error;
