@@ -265,7 +265,7 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
   };
 
   return (
-    <form onSubmit={(event) => void save(event)}>
+    <form className="product-form @container" onSubmit={(event) => void save(event)}>
       <header className="mb-6">
         <h1 className="font-Outfit text-3xl font-medium">
           {isCreating ? "Agregar producto" : "Editar producto"}
@@ -278,7 +278,7 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
       </header>
       <fieldset
         disabled={saving}
-        className="grid min-w-0 gap-8 lg:grid-cols-2 disabled:opacity-70">
+        className="grid min-w-0 gap-8 @3xl:grid-cols-2 disabled:opacity-70">
         <section className="min-w-0 flex flex-col gap-4">
           <h2 className="font-Outfit text-xl font-medium">
             Datos de la planta
@@ -330,7 +330,7 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
               <p className="mt-1 mb-2 text-xs text-black/70">
                 Podés marcar varias y elegir cuál mostrar en la tarjeta.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 @md:grid-cols-2 gap-2">
                 {productLabels.map((option) => (
                   <label
                     key={option.value}
@@ -340,7 +340,7 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
                       type="checkbox"
                       checked={form.etiquetas.includes(option.value)}
                       onChange={() => toggleLabel(option.value)}
-                      className="accent-alt-dark "
+                      className="h-3.5 w-3.5 shrink-0 accent-alt-dark"
                     />
                     {option.label}
                   </label>
@@ -432,7 +432,7 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
               <p className="mt-2 text-xs text-cancel">Sin unidades disponibles: se mostrará sin stock aunque esté habilitado.</p>
             )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
             {textFields.map((field) => (
               <label
                 key={field.name}
@@ -555,7 +555,7 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
             </button>
           )}
         </section>
-        <label className="flex flex-col gap-2 lg:col-span-2">
+        <label className="flex flex-col gap-2 @3xl:col-span-2">
           <span className="font-Outfit text-xl font-medium">Descripción</span>
           <textarea
             name="descripcion"
