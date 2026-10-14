@@ -9,6 +9,7 @@ export interface Planta {
   etiqueta: string | null; origen: string | null; tipo: string | null; iluminacion: string | null;
   resistencia: string | null; tamano: string | null; cuidado: string | null; descripcion: string | null;
   petFriendly: boolean | null;
+  habilitado: boolean;
 }
 
 export interface ImagenDePlanta {
@@ -28,6 +29,8 @@ export interface PlantaEdicion extends PlantaDetalle {
 
 export interface PlantaResumen {
   id: number;
+  stock: number;
+  habilitado: boolean;
   name: string;
   family: string | null;
   price: number;
@@ -39,6 +42,7 @@ export interface PlantaResumen {
 
 export interface PlantaInventario {
   id: number;
+  habilitado: boolean;
   nombre: string;
   categoria: string | null;
   stock: number;
@@ -50,7 +54,7 @@ export interface PlantaInventario {
 class PlantaModel extends BaseModel<Planta> {
   // MySQL returns BOOLEAN columns as 0/1. Keep the JSON API boolean-valued.
   private normalizePlant<T extends Planta>(plant: T): T {
-    return { ...plant, petFriendly: plant.petFriendly == null ? null : Boolean(plant.petFriendly) };
+    return { ...plant, habilitado: Boolean(plant.habilitado), petFriendly: plant.petFriendly == null ? null : Boolean(plant.petFriendly) };
   }
 
   async findAll(): Promise<Planta[]> {
@@ -139,6 +143,7 @@ class PlantaModel extends BaseModel<Planta> {
         p.nombre,
         p.familia AS categoria,
         p.stock,
+        p.habilitado,
         p.precio,
         COALESCE(p.discount, 0) AS discount,
         COALESCE(SUM(CASE WHEN o.id IS NOT NULL THEN d.cantidad ELSE 0 END), 0) AS ventas
@@ -146,7 +151,7 @@ class PlantaModel extends BaseModel<Planta> {
       LEFT JOIN orden_detalle AS d ON d.plantas_id = p.id
       LEFT JOIN ordenes AS o
         ON o.id = d.ordenes_id AND o.estado IN ('confirmado', 'entregado')
-      GROUP BY p.id, p.nombre, p.familia, p.stock, p.precio, p.discount
+      GROUP BY p.id, p.nombre, p.familia, p.stock, p.habilitado, p.precio, p.discount
       ORDER BY p.nombre
     `);
     return rows.map((row) => ({
@@ -154,6 +159,7 @@ class PlantaModel extends BaseModel<Planta> {
       nombre: String(row.nombre),
       categoria: row.categoria === null ? null : String(row.categoria),
       stock: Number(row.stock),
+      habilitado: Boolean(row.habilitado),
       precio: Number(row.precio),
       discount: Number(row.discount),
       ventas: Number(row.ventas),
@@ -189,6 +195,8 @@ class PlantaModel extends BaseModel<Planta> {
     const [plantas] = await pool.execute<RowDataPacket[]>(
       `SELECT
         p.\`id\`,
+        p.\`stock\`,
+        p.\`habilitado\`,
         p.\`nombre\` AS \`name\`,
         p.\`familia\` AS \`family\`,
         p.\`precio\` AS \`price\`,
@@ -207,11 +215,11 @@ class PlantaModel extends BaseModel<Planta> {
       ORDER BY p.\`nombre\``,
       [familia, familia],
     );
-    return plantas as PlantaResumen[];
+    return plantas.map((plant) => ({ ...plant, stock: Number(plant.stock), habilitado: Boolean(plant.habilitado) })) as PlantaResumen[];
   }
 
   protected readonly table = "plantas";
-  protected readonly fields = ["nombre", "familia", "precio", "discount", "stock", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "petFriendly", "descripcion"] as const;
+  protected readonly fields = ["nombre", "familia", "precio", "discount", "stock", "habilitado", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "petFriendly", "descripcion"] as const;
 }
 
 export default new PlantaModel();

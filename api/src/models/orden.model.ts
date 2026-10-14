@@ -126,14 +126,17 @@ class OrdenModel extends BaseModel<Orden> {
       }> = [];
       for (const [plantId, quantity] of items) {
         const [rows] = await connection.execute<RowDataPacket[]>(
-          ` SELECT id, precio, COALESCE(discount, 0) AS discount, stock FROM plantas WHERE id = ? FOR UPDATE `,
+          ` SELECT id, precio, COALESCE(discount, 0) AS discount, stock, habilitado FROM plantas WHERE id = ? FOR UPDATE `,
           [plantId],
         );
         const plant = rows[0] as
-          | { id: number; precio: number; discount: number; stock: number }
+          | { id: number; precio: number; discount: number; stock: number; habilitado: number }
           | undefined;
         if (!plant) {
           throw new Error("PLANT_NOT_FOUND");
+        }
+        if (!plant.habilitado) {
+          throw new Error("PLANT_DISABLED");
         }
         if (plant.stock < quantity) {
           throw new Error("INSUFFICIENT_STOCK");

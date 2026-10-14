@@ -6,7 +6,7 @@ import { parseId } from "../utils/request.js";
 import type { Planta } from "../models/planta.model.js";
 import { parsePlantCreate, parsePlantEdit } from "../utils/plant-edit.js";
 
-const plantFields = ["nombre", "familia", "precio", "discount", "stock", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "petFriendly", "descripcion"] as const satisfies readonly (keyof Planta & string)[];
+const plantFields = ["nombre", "familia", "precio", "discount", "stock", "habilitado", "etiqueta", "origen", "tipo", "iluminacion", "resistencia", "tamano", "cuidado", "petFriendly", "descripcion"] as const satisfies readonly (keyof Planta & string)[];
 const crudController = createCrudController(plantaService, plantFields, ["nombre", "precio", "stock"]);
 
 export default {

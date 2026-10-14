@@ -8,6 +8,7 @@
     "create-user": "tsx src/scripts/create-user.ts",
     "migrate:product-labels": "tsx src/scripts/migrate-product-labels.ts",
     "migrate:pet-friendly": "tsx src/scripts/migrate-pet-friendly.ts",
+    "migrate:product-availability": "tsx src/scripts/migrate-product-availability.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },

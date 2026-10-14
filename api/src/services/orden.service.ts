@@ -29,6 +29,9 @@ class OrdenService extends BaseService<Orden> {
       if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
         throw new HttpError(409, "Insufficient stock for one or more plants.");
       }
+      if (error instanceof Error && error.message === "PLANT_DISABLED") {
+        throw new HttpError(409, "Uno de los productos está sin stock. Revisá tu carrito antes de continuar.");
+      }
       throw error;
     }
   }

@@ -1,5 +1,12 @@
 # Entre Hojas API
 
+## Disponibilidad de productos
+
+Antes de iniciar esta versión, ejecutá `pnpm migrate:product-availability` desde `api/`.
+La migración agrega `plantas.habilitado` sin modificar el stock y conserva los estados al volver a ejecutarla.
+Los productos existentes quedan habilitados. El formulario guarda el interruptor con los demás cambios;
+el catálogo mantiene visibles los productos deshabilitados o con stock cero y el checkout impide comprarlos.
+
 Express + TypeScript API using an MVC-style structure:
 
 - `models/`: database queries and SQL only.

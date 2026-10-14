@@ -8,6 +8,19 @@ const validInput = {
   cuidado: null, descripcion: null, imagenesEliminadas: [],
 };
 
+test("availability accepts only booleans, defaults new products to enabled and preserves older edits", () => {
+  for (const habilitado of [true, false]) {
+    assert.equal(parsePlantEdit({ ...validInput, habilitado }).data.habilitado, habilitado);
+    assert.equal(parsePlantCreate({ ...validInput, stock: 8, habilitado }).habilitado, habilitado);
+  }
+  assert.equal(parsePlantCreate({ ...validInput, stock: 8 }).habilitado, true);
+  assert.ok(!Object.hasOwn(parsePlantEdit(validInput).data, "habilitado"));
+  for (const habilitado of [null, "false", "true", 0, 1, [], {}]) {
+    assert.throws(() => parsePlantEdit({ ...validInput, habilitado }), /habilitado/);
+    assert.throws(() => parsePlantCreate({ ...validInput, stock: 8, habilitado }), /habilitado/);
+  }
+});
+
 test("creation requires a valid initial stock and cannot set sales or remove existing images", () => {
   for (const stock of [0, 7, 2_147_483_647]) {
     const data = parsePlantCreate({ ...validInput, stock });

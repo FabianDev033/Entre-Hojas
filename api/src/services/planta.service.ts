@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { uploadsDirectory } from "../config/uploads.js";
 import type { PlantCreateData, PlantEditData } from "../utils/plant-edit.js";
 import { parsePetFriendly } from "../utils/pet-friendly.js";
+import { parseEnabled } from "../utils/product-availability.js";
 
 function imageExtension(file: Express.Multer.File): string {
   const bytes = file.buffer;
@@ -32,11 +33,13 @@ class PlantaService extends BaseService<Planta> {
 
   create(data: Partial<Planta>) {
     if (data.petFriendly !== undefined) parsePetFriendly(data.petFriendly);
+    if (data.habilitado !== undefined) parseEnabled(data.habilitado);
     return super.create(data);
   }
 
   update(id: number, data: Partial<Planta>) {
     if (data.petFriendly !== undefined) parsePetFriendly(data.petFriendly);
+    if (data.habilitado !== undefined) parseEnabled(data.habilitado);
     return super.update(id, data);
   }
 
