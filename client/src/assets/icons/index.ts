@@ -42,3 +42,4 @@ export { default as LimitedEdition } from "./LimitedEdition";
 export { default as OurSelection } from "./OurSelection";
 export { default as BestSeller } from "./BestSeller";
 export { default as CameBack } from "./CameBack";
+export { default as NoStock } from "./NoStock";

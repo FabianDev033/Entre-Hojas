@@ -5,6 +5,7 @@ import { BnaIcon, CashIcon, MercadoPagoIcon } from "../../assets/images";
 import LocationModal from "../../Components/checkout/LocationModal";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../contexts/CartContext";
+import { isProductAvailable } from "../../utils/productAvailability";
 import {
   formatLocation,
   readSavedLocation,
@@ -44,6 +45,8 @@ export default function Checkout() {
 
   interface CheckoutPlant {
     id: number;
+    stock: number;
+    habilitado: boolean;
     nombre: string;
     familia: string;
     precio: number;
@@ -74,13 +77,18 @@ export default function Checkout() {
       try {
         const responses = await Promise.all(
           items.map((item) =>
-            axios.get(`${API_BASE_URL}/api/plantas/${item.plantId}`, {
+            axios.get<CheckoutPlant>(`${API_BASE_URL}/api/plantas/${item.plantId}`, {
               signal: controller.signal,
             }),
           ),
         );
-        if (!controller.signal.aborted)
-          setPlants(responses.map((response) => response.data));
+        if (!controller.signal.aborted) {
+          const loadedPlants = responses.map((response) => response.data);
+          setPlants(loadedPlants);
+          if (loadedPlants.some((plant) => !isProductAvailable(plant))) {
+            setLoadError("Uno de los productos está sin stock. Volvé al carrito para revisar tu compra.");
+          }
+        }
       } catch (error) {
         if (!axios.isCancel(error) && !controller.signal.aborted) {
           setLoadError("No pudimos cargar el resumen de tu compra.");
@@ -96,6 +104,7 @@ export default function Checkout() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting || isLoadingPlants || loadError || plants.some((plant) => !isProductAvailable(plant))) return;
     if (!items || !savedLocation) {
       setSubmitError("Completá tus datos y agregá una dirección de entrega.");
       return;

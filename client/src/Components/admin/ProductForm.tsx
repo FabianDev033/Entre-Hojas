@@ -55,6 +55,7 @@ export type Plant = {
   precio: number;
   discount: number;
   stock: number;
+  habilitado: boolean;
   ventas: number;
   etiqueta: string | null;
   etiquetas: string[];
@@ -92,6 +93,7 @@ function formValues(plant: Plant | null) {
     nombre: plant?.nombre ?? "",
     precio: plant ? String(plant.precio) : "",
     stock: String(plant?.stock ?? 0),
+    habilitado: plant?.habilitado ?? true,
     discount: String(plant?.discount ?? 0),
     etiqueta: plant?.etiqueta ?? "",
     etiquetas: plant?.etiquetas ?? (plant?.etiqueta ? [plant.etiqueta] : []),
@@ -401,6 +403,35 @@ export default function ProductForm({ initialPlant }: { initialPlant?: Plant }) 
               <dd className="mt-1">{plant?.ventas ?? 0}</dd>
             </div>
           </dl>
+          <div className="rounded-sm bg-bg-light p-3">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p id="availability-label" className="text-sm font-medium">Producto habilitado</p>
+                <p className={`mt-1 text-xs ${form.habilitado ? "text-primary-dark" : "text-cancel"}`} aria-live="polite">
+                  {form.habilitado ? "Habilitado" : "Deshabilitado · Se mostrará sin stock"}
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={form.habilitado}
+                aria-labelledby="availability-label"
+                aria-describedby="availability-help"
+                onClick={() => {
+                  setForm((current) => ({ ...current, habilitado: !current.habilitado }));
+                  setSaved(false);
+                }}
+                className={`flex h-7 w-12 shrink-0 items-center rounded-full p-1 cursor-pointer transition-colors ${form.habilitado ? "bg-primary-dark" : "bg-black/30"}`}>
+                <span className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform motion-reduce:transition-none ${form.habilitado ? "translate-x-5" : "translate-x-0"}`} />
+              </button>
+            </div>
+            <p id="availability-help" className="mt-3 text-xs text-black/70">
+              Al deshabilitarlo, seguirá visible con la cinta Sin stock, pero no se podrá abrir ni comprar. Las unidades se conservan. El cambio se aplica al guardar.
+            </p>
+            {form.habilitado && Number(form.stock) === 0 && (
+              <p className="mt-2 text-xs text-cancel">Sin unidades disponibles: se mostrará sin stock aunque esté habilitado.</p>
+            )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {textFields.map((field) => (
               <label

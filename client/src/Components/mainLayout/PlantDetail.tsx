@@ -9,6 +9,7 @@ import { QuantityModal, ShippingModal } from "../plantDetail";
 import { useCart } from "../../contexts/CartContext";
 import ProductSearch from "../common/ProductSearch";
 import { productImageUrl } from "../../utils/productImage";
+import { isProductAvailable } from "../../utils/productAvailability";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 export interface PlantImage{
@@ -23,6 +24,7 @@ interface Plant {
   nombre: string;
   familia: string;
   stock: number;
+  habilitado: boolean;
   precio: number;
   discount: number;
   etiqueta: string;
@@ -123,14 +125,14 @@ export default function PlantDetail({id}:{id?:number}) {
   }
 
   const handleAddToCart = () => {
-    if (!plant) return;
+    if (!plant || !isProductAvailable(plant)) return;
 
     addItem(plant.id, selectedQuantity);
     setHasAddedToCart(true);
   };
 
   const handleOrderNow = () => {
-    if (!plant) return;
+    if (!plant || !isProductAvailable(plant)) return;
 
     navigate("/checkout", {
       state: {
@@ -195,7 +197,15 @@ export default function PlantDetail({id}:{id?:number}) {
         </div>
       </header>
 
-      {plant &&
+      {!isLoading && plant && !isProductAvailable(plant) && (
+        <section className="flex flex-col items-center gap-4 px-4 py-16 text-center text-black">
+          <h1 className="font-Outfit text-2xl">Este producto está sin stock</h1>
+          <button type="button" onClick={() => navigate("/")} className="rounded-sm bg-primary-dark px-5 py-2 text-white cursor-pointer">
+            Volver al catálogo
+          </button>
+        </section>
+      )}
+      {!isLoading && plant && isProductAvailable(plant) &&
       <div className="flex flex-col gap-2" onClick={()=>{setShowSearch(false)}}>
         <section className="relative">
           {(detailImages?.length ?? 0) > 0 ? (
@@ -310,7 +320,7 @@ export default function PlantDetail({id}:{id?:number}) {
         </div>
       </div>
       }
-      {showQuantityModal && (
+      {showQuantityModal && plant && isProductAvailable(plant) && (
         <QuantityModal 
         onClose={()=>{setShowQuantityModal(false)}}
         setSelectedQuantity = {setSelectedQuantity}

@@ -170,7 +170,10 @@ export default function Products() {
                     )}
                     <span>{product.id}</span>
                   </div>
-                  <span className="text-center">{product.nombre}</span>
+                  <span className="text-center">
+                    {product.nombre}
+                    {!product.habilitado && <span className="block text-xs text-cancel">Deshabilitado</span>}
+                  </span>
                   <span className="text-center">
                     {product.categoria ?? "—"}
                   </span>

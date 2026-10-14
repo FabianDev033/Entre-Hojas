@@ -4,8 +4,12 @@ import { productImageUrl } from "../../utils/productImage";
 import { DiscountBadge, LabelBadge } from "../common";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { filterPlants } from "../../utils/productSearch";
+import { isProductAvailable } from "../../utils/productAvailability";
+import { NoStock } from "../../assets/icons";
 export interface Plant {
   id: number;
+  stock: number;
+  habilitado: boolean;
   name: string;
   family?: string | null;
   price: number;
@@ -48,7 +52,9 @@ export default function ProductList({ family }: { family?: string }) {
         );
         setList(
           selectedFamily === "Ofertas"
-            ? response.data.filter((plant) => (plant.labels ?? [plant.label]).includes("oferta"))
+            ? response.data.filter((plant) =>
+                (plant.labels ?? [plant.label]).includes("oferta"),
+              )
             : response.data,
         );
       } catch (requestError) {
@@ -107,17 +113,31 @@ export default function ProductList({ family }: { family?: string }) {
       {!isLoading && !error && (
         <article className="grid grid-cols-2 w-11/12 justify-center items-center place-items-center mx-auto gap-2 bg-bg-light mt-4 pb-30">
           {filteredPlants.map((plant) => (
-            <div
+            <button
+              type="button"
               key={plant.id}
+              disabled={!isProductAvailable(plant)}
+              aria-label={`${plant.family ?? ""} ${plant.name}${isProductAvailable(plant) ? "" : ": sin stock"}`.trim()}
               onClick={() => {
-                handleNavigate(plant.id);
+                if (isProductAvailable(plant)) handleNavigate(plant.id);
               }}
-              className="w-full max-w-45 h-65 mb-3 relative bg-[linear-gradient(to_top,#F2EBE3_0%,#F2EBE3_25%,#D8CAB8_100%)] flex flex-col shadow-lg rounded-md cursor-pointer hover:shadow-2xl transition duration-300 ease-in-out">
+              className="w-full max-w-45 h-65 mb-3 relative overflow-hidden text-left bg-[linear-gradient(to_top,#F2EBE3_0%,#F2EBE3_25%,#D8CAB8_100%)] flex flex-col shadow-lg rounded-md cursor-pointer enabled:hover:shadow-2xl disabled:cursor-default transition duration-300 ease-in-out">
+              {!isProductAvailable(plant) && (
+                <>
+                  <NoStock
+                    className="absolute top-0 right-0 z-10 h-20 w-20 drop-shadow-md"
+                    aria-hidden="true"
+                  />
+                  <span className="absolute top-5.5 -right-2 z-10 w-20 flex items-center justify-center text-white font-outfit font-normal text-xs rotate-45 ">
+                    SIN STOCK
+                  </span>
+                </>
+              )}
               {plant.image && (
                 <img
                   src={productImageUrl(plant.image)}
                   alt={plant.name}
-                  className="z-0 max-h-9/12 object-contain"
+                  className={`z-0 max-h-9/12 object-contain ${isProductAvailable(plant) ? "" : "opacity-60 grayscale-50"}`}
                 />
               )}
               {/*{plant.family && (
@@ -128,7 +148,9 @@ export default function ProductList({ family }: { family?: string }) {
                 </span>
               )}*/}
               <div className="absolute bottom-0 left-0 flex flex-col py-2 gap-1 font-light w-full">
-                <LabelBadge label={plant.label} />
+                {isProductAvailable(plant) &&
+                  plant.labels &&
+                  plant.labels.length > 0 && <LabelBadge label={plant.label} />}
                 <div className="text-black font-Outfit text-lg flex flex-col gap-0 px-2">
                   <span className="">{plant.family}</span>
                   <span>{plant.name}</span>
@@ -143,7 +165,7 @@ export default function ProductList({ family }: { family?: string }) {
                   <DiscountBadge discount={plant.discount} size={"mini"} />
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </article>
       )}

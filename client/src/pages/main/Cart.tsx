@@ -6,6 +6,7 @@ import { Arrow2, Checked, Trash } from "../../assets/icons";
 import { DiscountBadge } from "../../Components/common";
 import { useCart } from "../../contexts/CartContext";
 import type { CartStorageItem } from "../../utils/cart";
+import { isProductAvailable } from "../../utils/productAvailability";
 
 interface PlantImage {
   id: number;
@@ -20,6 +21,7 @@ interface CartPlant {
   precio: number;
   discount: number;
   stock: number;
+  habilitado: boolean;
   imagenes: PlantImage[];
 }
 
@@ -88,11 +90,11 @@ export default function Cart() {
 
       setCartProducts(products);
       setSelectedProductIds((current) => {
-        const nextIds = new Set(products.map(({ plant }) => plant.id));
+        const nextIds = new Set(products.filter(({ plant }) => isProductAvailable(plant)).map(({ plant }) => plant.id));
         const next = new Set([...current].filter((id) => nextIds.has(id)));
 
         products.forEach(({ plant }) => {
-          if (!loadedProductIds.current.has(plant.id)) next.add(plant.id);
+          if (isProductAvailable(plant) && !loadedProductIds.current.has(plant.id)) next.add(plant.id);
         });
 
         loadedProductIds.current = nextIds;
@@ -124,7 +126,8 @@ export default function Cart() {
     return Array.from(groups, ([family, products]) => ({ family, products }));
   }, [cartProducts]);
 
-  const selectedProducts = cartProducts.filter(({ plant }) => selectedProductIds.has(plant.id));
+  const availableProducts = cartProducts.filter(({ plant }) => isProductAvailable(plant));
+  const selectedProducts = availableProducts.filter(({ plant }) => selectedProductIds.has(plant.id));
   const totalUnits = selectedProducts.reduce((total, product) => total + product.quantity, 0);
   const originalTotal = selectedProducts.reduce(
     (total, { plant, quantity }) => total + plant.precio * quantity,
@@ -134,9 +137,10 @@ export default function Cart() {
     (sum, { plant, quantity }) => sum + discountedPrice(plant.precio, plant.discount) * quantity,
     0,
   );
-  const allSelected = cartProducts.length > 0 && selectedProductIds.size === cartProducts.length;
+  const allSelected = availableProducts.length > 0 && availableProducts.every(({ plant }) => selectedProductIds.has(plant.id));
 
   const toggleProduct = (plantId: number) => {
+    if (!availableProducts.some(({ plant }) => plant.id === plantId)) return;
     setSelectedProductIds((current) => {
       const next = new Set(current);
       if (next.has(plantId)) next.delete(plantId);
@@ -147,11 +151,12 @@ export default function Cart() {
 
   const toggleAll = () => {
     setSelectedProductIds(
-      allSelected ? new Set() : new Set(cartProducts.map(({ plant }) => plant.id)),
+      allSelected ? new Set() : new Set(availableProducts.map(({ plant }) => plant.id)),
     );
   };
 
   const toggleFamily = (products: CartProduct[]) => {
+    products = products.filter(({ plant }) => isProductAvailable(plant));
     const familyIsSelected = products.every(({ plant }) => selectedProductIds.has(plant.id));
 
     setSelectedProductIds((current) => {
@@ -190,6 +195,7 @@ export default function Cart() {
           <button
           type="button"
           onClick={toggleAll}
+          disabled={availableProducts.length === 0}
           className="flex h-10 w-full items-center gap-2 border-b border-black/20 bg-bg px-2 text-left font-Outfit font-light text-sm text-black shadow-sm"
           aria-pressed={allSelected}
         >
@@ -215,15 +221,19 @@ export default function Cart() {
           </div>
         )}
 
-        {groupedProducts.map(({ family, products }) => (
+        {groupedProducts.map(({ family, products }) => {
+          const availableFamilyProducts = products.filter(({ plant }) => isProductAvailable(plant));
+          const familyIsSelected = availableFamilyProducts.length > 0 && availableFamilyProducts.every(({ plant }) => selectedProductIds.has(plant.id));
+          return (
           <section key={family} className="border-y border-black/20 bg-bg shadow-sm mt-4">
             <button
               type="button"
               onClick={() => toggleFamily(products)}
+              disabled={availableFamilyProducts.length === 0}
               className="flex h-10 w-full items-center gap-2 px-2 text-left font-Outfit text-sm"
-              aria-pressed={products.every(({ plant }) => selectedProductIds.has(plant.id))}
+              aria-pressed={familyIsSelected}
             >
-              <SelectionBox selected={products.every(({ plant }) => selectedProductIds.has(plant.id))} />
+              <SelectionBox selected={familyIsSelected} />
               Productos de {family}
             </button>
 
@@ -243,6 +253,7 @@ export default function Cart() {
                   <button
                     type="button"
                     className="h-5 w-5"
+                    disabled={!isProductAvailable(plant)}
                     onClick={() => toggleProduct(plant.id)}
                     aria-label={`Seleccionar ${plant.nombre}`}
                     aria-pressed={selectedProductIds.has(plant.id)}
@@ -278,11 +289,15 @@ export default function Cart() {
                         </button>
                       </div>
 
+                      {!isProductAvailable(plant) && (
+                        <span className="mt-2 font-Manrope text-xs text-cancel">Sin stock · No disponible para comprar</span>
+                      )}
                       <div className="flex items-end justify-between pt-5 ">
                         <label className="relative">
                           <span className="sr-only">Cantidad de {plant.nombre}</span>
                           <select
                             value={quantity}
+                            disabled={!isProductAvailable(plant)}
                             onChange={(event) => updateQuantity(plant.id, Number(event.target.value))}
                             className="h-8 min-w-15 appearance-none rounded-md border border-black/20 bg-bg-light px-1 pr-5 text-xs outline-none cursor-pointer"
                           >
@@ -309,7 +324,8 @@ export default function Cart() {
               );
             })}
           </section>
-        ))}
+          );
+        })}
       </section>
 
       <aside className="font-Manrope fixed inset-x-0 bottom-0 z-20 border-t border-black/15 bg-bg-light px-2 py-4 shadow-[0_-8px_20px_rgba(0,0,0,0.13)]">
