@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Accept,
   Add,
   AddStock,
   Cancel,
+  Gear,
   List,
   Search,
   Subtract,
@@ -14,6 +16,7 @@ import { DiscountBadge } from "../../Components/common";
 type ProductView = "list" | "stock";
 
 export default function Products() {
+  const navigate = useNavigate();
   const [view, setView] = useState<ProductView>("list");
   const [search, setSearch] = useState("");
   const [stockAdditions, setStockAdditions] = useState<Record<number, number>>(
@@ -151,9 +154,26 @@ export default function Products() {
               return (
                 <div
                   key={product.id}
-                  className={`w-full min-h-14 grid ${gridColumns} place-items-center border-b border-black/15 font-Manrope text-md text-black`}>
-                  <span>{product.id}</span>
-                  <span className="text-center">{product.nombre}</span>
+                  className={`w-full min-h-14 grid ${gridColumns} place-items-center border-b border-black/15 font-Manrope relative text-md text-black`}>
+                  <div className="flex items-center gap-2">
+                    {view === "list" && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigate(`/admin/productos/${product.id}/editar`)
+                        }
+                        aria-label={`Editar ${product.nombre}`}
+                        title="Editar producto"
+                        className="text-black/80 cursor-pointer absolute left-5">
+                        <Gear className="w-4 h-4" />
+                      </button>
+                    )}
+                    <span>{product.id}</span>
+                  </div>
+                  <span className="text-center">
+                    {product.nombre}
+                    {!product.habilitado && <span className="block text-xs text-cancel">Deshabilitado</span>}
+                  </span>
                   <span className="text-center">
                     {product.categoria ?? "—"}
                   </span>
