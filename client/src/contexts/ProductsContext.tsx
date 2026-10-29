@@ -16,6 +16,7 @@ export type Product = {
   nombre: string;
   categoria: string | null;
   stock: number;
+  habilitado: boolean;
   precio: number;
   discount: number;
   ventas: number;

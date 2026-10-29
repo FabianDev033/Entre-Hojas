@@ -17,6 +17,7 @@ import {
 } from "../pages";
 import { ProductList, PlantDetail } from "../Components/mainLayout";
 import { ProductsProvider } from "../contexts/ProductsContext";
+import EditProduct from "../pages/admin/EditProduct";
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
       {
         path: "productos",
         element: <ProductsProvider><Products /></ProductsProvider>,
+      },
+      {
+        path: "productos/:id/editar",
+        element: <EditProduct />,
       },
       {
         path: "agregarProducto",

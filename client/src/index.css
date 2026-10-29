@@ -50,6 +50,17 @@ body{
   background-color: #2e2e2e;
 }
 
+/* Keep product forms 20% larger at normal browser zoom. */
+.product-form {
+  --spacing: 0.3rem;
+  --text-xs: 0.9rem;
+  --text-sm: 1.05rem;
+  --text-lg: 1.35rem;
+  --text-xl: 1.5rem;
+  --text-3xl: 2.25rem;
+  font-size: 1.2rem;
+}
+
 @theme {
   --animate-scroll: scroll 40s linear infinite;
 

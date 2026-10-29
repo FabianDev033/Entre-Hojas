@@ -1,46 +1,38 @@
-import { Promo, Fuego } from "../../assets/icons";
+import {
+  Promo,
+  Fuego,
+  BestSeller,
+  New,
+  CameBack,
+  IdealGift,
+  OurSelection,
+  LimitedEdition,
+} from "../../assets/icons";
+import { productLabels } from "../../utils/productLabels";
 export default function LabelBadge({ label }: { label: string }) {
-  const labelPromo = () => {
-    return (
-      <div className="flex w-fit px-2 h-5 justify-center items-center gap-1 bg-alt-dark rounded-r-sm">
-        <Promo className="h-3 w-3 text-black shadow-lg" />
-        <span className="text-white text-[.7rem] font-Manrope font-light">
-          OFERTA
-        </span>
-      </div>
-    );
-  };
-
-  const labelLasts = () => {
-    return (
-      <div className="flex w-fit px-2 h-5 justify-center items-center gap-1 bg-secondary rounded-r-sm">
-        <span className="text-white text-[.7rem] font-Manrope font-light">
-          !ULTIMOS!
-        </span>
-      </div>
-    );
-  };
-
-  const labelMostSold = () => {
-    return (
-      <div className="flex w-fit px-2 h-5 justify-center items-center gap-1 bg-secondary rounded-r-sm">
-        <Fuego className="h-3 w-3" />
-        <span className="text-white text-[.7rem] font-Manrope font-light">
-          MAS VENDIDO
-        </span>
-      </div>
-    );
-  };
+  const selected = productLabels.find((option) => option.value === label);
+  if (!selected) return null;
 
   return (
     <div className="w-full z-10">
-      {label === "oferta"
-        ? labelPromo()
-        : label === "ultimo"
-          ? labelLasts()
-          : label === "top"
-            ? labelMostSold()
-            : null}
+      <div
+        className={`flex w-fit max-w-full min-h-5 px-2 items-center gap-1 rounded-r-sm text-white ${selected.color}`}>
+        {(label === "promo" || label === "oferta") && (
+          <Promo className="h-3 w-3 shrink-0" />
+        )}
+        {label === "top" && <BestSeller className="h-3 w-3 shrink-0" />}
+        {label === "ultimo" && <Fuego className="h-3 w-3 shrink-0" />}
+        {label === "nuevo" && <New className="h-3 w-3 shrink-0" />}
+        {label === "volvio" && <CameBack className="h-3 w-3 shrink-0" />}
+        {label === "regalo" && <IdealGift className="h-3 w-3 shrink-0" />}
+        {label === "elegido" && <OurSelection className="h-3 w-3 shrink-0" />}
+        {label === "limitada" && (
+          <LimitedEdition className="h-3 w-3 shrink-0" />
+        )}
+        <span className="text-white text-[.7rem] font-Manrope font-light">
+          {selected.label}
+        </span>
+      </div>
     </div>
   );
 }
