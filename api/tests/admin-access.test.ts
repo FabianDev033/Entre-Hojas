@@ -16,6 +16,7 @@ const controllers = await Promise.all([
   import("../src/controllers/orden.controller.js"),
   import("../src/controllers/orden-detalle.controller.js"),
   import("../src/controllers/planta.controller.js"),
+  import("../src/controllers/compra.controller.js"),
 ]);
 
 for (const { default: controller } of controllers) {
@@ -35,6 +36,11 @@ const baseUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}/api`
 after(() => new Promise<void>((resolve) => server.close(() => resolve())));
 
 const protectedRoutes = [
+  ["GET", "/compras"],
+  ["POST", "/compras"],
+  ["GET", "/compras/1"],
+  ["PATCH", "/compras/1"],
+  ["POST", "/compras/1/anular"],
   ["GET", "/dashboard"],
   ["GET", "/ordenes"],
   ["PATCH", "/ordenes/1/estado"],
