@@ -43,3 +43,6 @@ export { default as OurSelection } from "./OurSelection";
 export { default as BestSeller } from "./BestSeller";
 export { default as CameBack } from "./CameBack";
 export { default as NoStock } from "./NoStock";
+export { default as Pen } from "./Pen";
+export { default as Calendar } from "./Calendar";
+export { default as MiniAdd } from "./MiniAdd";
