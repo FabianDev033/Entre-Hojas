@@ -9,6 +9,7 @@
     "migrate:product-labels": "tsx src/scripts/migrate-product-labels.ts",
     "migrate:pet-friendly": "tsx src/scripts/migrate-pet-friendly.ts",
     "migrate:product-availability": "tsx src/scripts/migrate-product-availability.ts",
+    "migrate:purchases": "tsx src/scripts/migrate-purchases.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },

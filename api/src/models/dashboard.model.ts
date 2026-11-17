@@ -157,7 +157,7 @@ class DashboardModel {
           "FROM (SELECT COALESCE(SUM(CASE WHEN estado IN (?, ?) THEN total ELSE 0 END), 0) AS sales,",
           "COUNT(*) AS orders, COALESCE(SUM(CASE WHEN estado IN (?, ?) THEN 1 ELSE 0 END), 0) AS confirmedOrders",
           "FROM ordenes WHERE fecha >= ? AND fecha < ?) AS order_statistics",
-          "CROSS JOIN (SELECT COALESCE(SUM(total), 0) AS purchases FROM compras WHERE fecha >= ? AND fecha < ?) AS purchase_statistics",
+          "CROSS JOIN (SELECT COALESCE(SUM(total), 0) AS purchases FROM compras WHERE anulada = FALSE AND fecha >= ? AND fecha < ?) AS purchase_statistics",
         ].join(" "),
         [
           ...confirmedStatuses,
@@ -198,7 +198,7 @@ class DashboardModel {
       pool.execute<DailyPurchasesRow[]>(
         [
           "SELECT DATE_FORMAT(fecha, '%Y-%m') AS month, DAY(fecha) AS day, COALESCE(SUM(total), 0) AS purchases",
-          "FROM compras WHERE fecha >= ? AND fecha < ? GROUP BY DATE_FORMAT(fecha, '%Y-%m'), DAY(fecha) ORDER BY DATE_FORMAT(fecha, '%Y-%m'), DAY(fecha)",
+          "FROM compras WHERE anulada = FALSE AND fecha >= ? AND fecha < ? GROUP BY DATE_FORMAT(fecha, '%Y-%m'), DAY(fecha) ORDER BY DATE_FORMAT(fecha, '%Y-%m'), DAY(fecha)",
         ].join(" "),
         [previousMonthStart, nextMonthStart],
       ),

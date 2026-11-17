@@ -88,7 +88,7 @@ export default function Menu() {
         {menu.map((item, index) => (
           <div
             key={index}
-            className={`flex gap-3 items-center cursor-pointer w-full px-3 py-2 transition-all ease-in-out duration-300 ${pathname === item.path || (item.path === "/admin/productos" && pathname.startsWith(`${item.path}/`)) ? "bg-bg-light rounded-md shadow-md text-alt" : null}`}
+            className={`flex gap-3 items-center cursor-pointer w-full px-3 py-2 transition-all ease-in-out duration-300 ${pathname === item.path || (item.path !== "/admin" && pathname.startsWith(`${item.path}/`)) ? "bg-bg-light rounded-md shadow-md text-alt" : null}`}
             onClick={item.navigate}>
             {item.icon}
             <span className="text-black">{item.name}</span>

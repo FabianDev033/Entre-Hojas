@@ -18,6 +18,7 @@ import {
 import { ProductList, PlantDetail } from "../Components/mainLayout";
 import { ProductsProvider } from "../contexts/ProductsContext";
 import EditProduct from "../pages/admin/EditProduct";
+import PurchaseEditor from "../pages/admin/PurchaseEditor";
 
 export const router = createBrowserRouter([
   {
@@ -89,6 +90,14 @@ export const router = createBrowserRouter([
       {
         path: "Compras",
         element: <Shoppings />,
+      },
+      {
+        path: "Compras/nueva",
+        element: <PurchaseEditor />,
+      },
+      {
+        path: "Compras/:id/editar",
+        element: <PurchaseEditor />,
       },
     ],
   },

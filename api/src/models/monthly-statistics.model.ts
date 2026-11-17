@@ -60,7 +60,7 @@ class MonthlyStatisticsModel {
       ") AS order_statistics",
       "CROSS JOIN (",
       "  SELECT COALESCE(SUM(total), 0) AS purchases",
-      "  FROM compras WHERE fecha >= ? AND fecha < ?",
+      "  FROM compras WHERE anulada = FALSE AND fecha >= ? AND fecha < ?",
       ") AS purchase_statistics",
     ].join(" ");
 

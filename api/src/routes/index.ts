@@ -9,6 +9,7 @@ import plantaController from "../controllers/planta.controller.js";
 import { requireAuth } from "../middleware/require-auth.js";
 import { createCrudRouter } from "./crud.routes.js";
 import { uploadImages } from "../middleware/upload-images.js";
+import compraController from "../controllers/compra.controller.js";
 
 const router = Router();
 router.post("/auth/login", authController.login);
@@ -29,6 +30,11 @@ router.post("/ordenes/checkout", ordenController.checkout);
 router.get("/ordenes/:id", ordenController.findOrderDetailById);
 
 router.use(requireAuth);
+router.get("/compras", compraController.findAll);
+router.post("/compras", compraController.create);
+router.get("/compras/:id", compraController.findById);
+router.patch("/compras/:id", compraController.update);
+router.post("/compras/:id/anular", compraController.cancel);
 router.post("/productos", uploadImages, plantaController.createProduct);
 router.get("/dashboard", dashboardController.getDashboard);
 router.get("/productos/:id/edicion", plantaController.findEditById);
