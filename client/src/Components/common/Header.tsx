@@ -85,7 +85,7 @@ export default function Header() {
             ? "flex items-center"
             : "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center"
         }
-        px-3 sm:px-6 bg-primary w-full min-h-12 pt-2
+        px-3 py-2 sm:px-6 bg-primary w-full min-h-12 pt-2
         ${header.showShadow ? "shadow-md border-b border-black/30" : ""}
         relative z-20
       `}>
@@ -119,7 +119,11 @@ export default function Header() {
         />
       )}
 
-      {!isCheckout && header.showSearch && <ProductSearch />}
+      {!isCheckout && header.showSearch && (
+        <div className="absolute left-1/2 top-1/2 w-[50%] max-w-2xl -translate-x-1/2 -translate-y-1/2">
+          <ProductSearch expanded />
+        </div>
+      )}
 
       {!isCheckout && header.showSearchIcon && (
         <div className="col-start-3 w-18 h-8 justify-self-center flex justify-between items-center ">

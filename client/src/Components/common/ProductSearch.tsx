@@ -78,7 +78,7 @@ function SearchForm({
   return (
     <form
       role="search"
-      className={`relative flex items-center w-full h-9 bg-bg-light rounded-md shadow-md ${expanded ? "flex-1 min-w-0 max-w-none" : "justify-self-center max-w-7/12"}`}
+      className={`relative flex items-center font-Manrope w-full h-9 bg-bg-light rounded-md shadow-md ${expanded ? "flex-1 min-w-0 max-w-none" : "justify-self-center max-w-7/12"}`}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget))
           setIsOpen(false);
@@ -107,7 +107,7 @@ function SearchForm({
         autoComplete="off"
         aria-controls={showSuggestions ? suggestionsId : undefined}
         aria-label="Buscar plantas"
-        className="min-w-0 flex-1 ml-3 text-sm focus:outline-none"
+        className="min-w-0 flex-1 ml-3 text-sm focus:outline-none placeholder:text-xs"
         placeholder="Buscar Entre Hojas"
       />
       <button
