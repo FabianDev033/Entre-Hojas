@@ -43,9 +43,9 @@ export default function QuantityModal(
     }
   };
   return (
-    <article className='fixed top-0 h-screen w-screen z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end' onClick={onClose}>
-      <div className='relative h-8/12 w-screen bg-bg-dark rounded-t-md' onClick={(e)=> e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="quantity-modal-title">
-        <div className='pt-5 flex flex-col gap-6 h-full'>
+    <article className='fixed inset-0 z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end' onClick={onClose}>
+      <div className='relative mx-auto h-[min(66.667svh,36rem)] w-full max-w-xl overflow-y-auto bg-bg-dark rounded-t-md sm:rounded-t-xl' onClick={(e)=> e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="quantity-modal-title">
+        <div className='pt-6 flex flex-col gap-6 h-full'>
           <span id="quantity-modal-title" className='font-Outfit font-normal text-black text-xl px-2 '>Elegi Cantidad</span>
           {!isCustom ? (
             <div className='flex flex-col justify-center items-center border-b border-black/30 rounded-lg font-Manrope font-normal text-black'>
