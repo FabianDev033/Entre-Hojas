@@ -28,9 +28,9 @@ export default function Home() {
   }
 
   return (
-    <main className="bg-bg-light min-w-screen flex flex-col items-center  text-white">
-      <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-63 w-screen absolute z-0"></div>
-      <section className="flex z-10 w-[95%] h-65 bg-bg mt-2 rounded-md shadow-md">
+    <main className="bg-bg-light w-full flex flex-col items-center text-white">
+      <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-63 w-full absolute z-0"></div>
+      <section className="flex z-10 w-[calc(100%-2rem)] max-w-6xl h-65 bg-bg mt-4 rounded-md shadow-md overflow-hidden">
         <div className="flex flex-col items-center justify-between w-[45%]">
           <div className="flex flex-col items-center gap-2">
             <h1 className="text-4xl font-Outfit font-regular text-black text-shadow-sm">POTUS</h1>
@@ -46,15 +46,15 @@ export default function Home() {
           <img src={PromoPotus1} alt="Promo Potus 1" className="h-full rounded-r-md object-cover object-[35%_center]"/>
         </div>
       </section>
-      <section className="flex overflow-scroll scrollbar-none  gap-7 w-screen h-fit p-2">
+      <section className="flex overflow-x-auto scrollbar-none gap-6 sm:gap-8 w-full max-w-6xl h-fit px-4 py-3">
         {categories.map((category, index) => (
-          <div key={index} className="flex flex-col items-center gap-0 cursor-pointer" onClick={()=>{handleCategories(category.path)}}>
+          <div key={index} className="flex shrink-0 flex-col items-center gap-1 cursor-pointer" onClick={()=>{handleCategories(category.path)}}>
             <img src={category.icon} alt={category.name} className="w-20 h-20 object-contain"/>
             <span className="text-sm font-Outfit text-black">{category.name}</span>
           </div>
         ))}
       </section>
-      <section className="flex justify-around items-center w-full h-40">
+      <section className="flex justify-around items-center w-full max-w-5xl min-h-36 py-6 px-3">
         {
           features.map((feature, index) => (
           <div key={index} className="flex flex-col items-center text-center w-30 h-30 gap-3">
@@ -63,7 +63,7 @@ export default function Home() {
           </div>
         ))}
       </section>
-      <section className=" w-full">
+      <section className="w-full">
         <ProductList family="AllPlants" />
       </section>
     </main>

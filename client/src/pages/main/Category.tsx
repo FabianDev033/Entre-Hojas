@@ -22,12 +22,12 @@ export default function Category() {
   }
 
   return (
-    <main className="bg-bg-light min-h-[calc(100svh-55px)] min-w-screen flex flex-col items-center font-Outfit text-black">
-      <div className="w-full flex flex-col gap-6 mt-24 pb-30">
+    <main className="bg-bg-light min-h-[calc(100svh-64px)] w-full flex flex-col items-center font-Outfit text-black">
+      <div className="w-full max-w-3xl flex flex-col gap-4 mt-8 sm:mt-12 px-4 pb-24">
         {categories.map((category, index) => (
           <div
             key={index}
-            className="w-full px-2 flex justify-between items-center gap-2 border-b border-black cursor-pointer"
+            className="w-full min-h-14 py-3 flex justify-between items-center gap-3 border-b border-black/30 cursor-pointer"
             onClick={() => handleNavigate(category.name)}
           >
             <span className="text-3xl">{category.name}</span>

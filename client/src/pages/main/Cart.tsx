@@ -187,7 +187,7 @@ export default function Cart() {
   };
 
   return (
-    <main className="min-h-svh bg-bg-light pb-70 font-Outfit text-black">
+    <main className="min-h-svh bg-bg-light pb-40 font-Outfit text-black">
 
       
       <section>
@@ -225,7 +225,7 @@ export default function Cart() {
           const availableFamilyProducts = products.filter(({ plant }) => isProductAvailable(plant));
           const familyIsSelected = availableFamilyProducts.length > 0 && availableFamilyProducts.every(({ plant }) => selectedProductIds.has(plant.id));
           return (
-          <section key={family} className="border-y border-black/20 bg-bg shadow-sm mt-4">
+          <section key={family} className="mx-auto w-full max-w-3xl border-y border-black/20 bg-bg shadow-sm mt-4">
             <button
               type="button"
               onClick={() => toggleFamily(products)}
@@ -249,7 +249,7 @@ export default function Cart() {
               );
 
               return (
-                <article key={plant.id} className="grid grid-cols-[24px_1fr] gap-2 border-t border-black/20 px-2 py-3">
+                <article key={plant.id} className="grid grid-cols-[24px_1fr] gap-3 border-t border-black/20 px-3 py-4">
                   <button
                     type="button"
                     className="h-5 w-5"
@@ -328,7 +328,8 @@ export default function Cart() {
         })}
       </section>
 
-      <aside className="font-Manrope fixed inset-x-0 bottom-0 z-20 border-t border-black/15 bg-bg-light px-2 py-4 shadow-[0_-8px_20px_rgba(0,0,0,0.13)]">
+      <aside className="font-Manrope fixed inset-x-0 bottom-0 z-20 border-t border-black/15 bg-bg-light px-4 py-4 shadow-[0_-8px_20px_rgba(0,0,0,0.13)]">
+        <div className="mx-auto max-w-3xl">
         <div className="mb-5 flex justify-between font-light text-sm">
           <span>Productos ({totalUnits})</span>
           <div className="flex gap-4">
@@ -355,6 +356,7 @@ export default function Cart() {
         >
           Continuar
         </button>
+        </div>
       </aside>
     </main>
   );

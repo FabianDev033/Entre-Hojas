@@ -190,12 +190,12 @@ export default function LocationModal({
 
   return (
     <div
-      className="fixed top-0 h-screen w-screen z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end"
+      className="fixed inset-0 z-30 backdrop-blur-[1px] bg-black/75 flex flex-col justify-end"
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="relative h-10/12 w-screen overflow-y-auto bg-bg-dark flex flex-col gap-4 items-center rounded-t-md pb-5"
+        className="relative mx-auto h-[min(83.333svh,52rem)] w-full max-w-3xl overflow-y-auto bg-bg-dark flex flex-col gap-4 items-center rounded-t-md sm:rounded-t-xl pb-5"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"

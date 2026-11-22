@@ -93,15 +93,21 @@ export default function ProductList({ family }: { family?: string }) {
   };
 
   return (
-    <main className="bg-bg-light flex flex-col items-center pt-4 min-h-[calc(100svh-60px)]">
-      <span className="font-Outfit text-4xl self-start text-black text-shadow-sm ml-4">
+    <main className="bg-bg-light flex w-full flex-col items-center pt-6 min-h-[calc(100svh-64px)]">
+      <span className="font-Outfit text-4xl self-start w-full max-w-6xl px-4 text-black text-shadow-sm">
         {title}
       </span>
 
       {isLoading && (
-        <p className="mt-6 font-Manrope text-black">Cargando plantas...</p>
+        <p className="mt-6 px-4 font-Manrope text-black" role="status">
+          Cargando plantas...
+        </p>
       )}
-      {error && <p className="mt-6 font-Manrope text-black">{error}</p>}
+      {error && (
+        <p className="mt-6 px-4 font-Manrope text-black" role="alert">
+          {error}
+        </p>
+      )}
       {!isLoading && !error && filteredPlants.length === 0 && (
         <p className="mt-6 px-4 font-Manrope text-black" role="status">
           {query
@@ -111,7 +117,7 @@ export default function ProductList({ family }: { family?: string }) {
       )}
 
       {!isLoading && !error && (
-        <article className="grid grid-cols-2 w-11/12 justify-center items-center place-items-center mx-auto gap-2 bg-bg-light mt-4 pb-30">
+        <article className="grid w-full max-w-6xl grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-center items-stretch place-items-center mx-auto gap-3 sm:gap-4 bg-bg-light mt-6 px-4 pb-24 sm:pb-16">
           {filteredPlants.map((plant) => (
             <button
               type="button"
@@ -121,7 +127,7 @@ export default function ProductList({ family }: { family?: string }) {
               onClick={() => {
                 if (isProductAvailable(plant)) handleNavigate(plant.id);
               }}
-              className="w-full max-w-45 h-65 mb-3 relative overflow-hidden text-left bg-[linear-gradient(to_top,#F2EBE3_0%,#F2EBE3_25%,#D8CAB8_100%)] flex flex-col shadow-lg rounded-md cursor-pointer enabled:hover:shadow-2xl disabled:cursor-default transition duration-300 ease-in-out">
+              className="w-full min-w-0 sm:h-72 aspect-4/6 relative overflow-hidden text-left bg-[linear-gradient(to_top,#F2EBE3_0%,#F2EBE3_25%,#D8CAB8_100%)] flex flex-col shadow-md rounded-md cursor-pointer enabled:hover:shadow-lg disabled:cursor-default transition duration-300 ease-in-out">
               {!isProductAvailable(plant) && (
                 <>
                   <NoStock
@@ -147,16 +153,17 @@ export default function ProductList({ family }: { family?: string }) {
                   {plant.family}
                 </span>
               )}*/}
-              <div className="absolute bottom-0 left-0 flex flex-col py-2 gap-1 font-light w-full">
+              <div className="absolute bottom-0 left-0 flex flex-col py-3 gap-2 font-light w-full">
                 {isProductAvailable(plant) &&
                   plant.labels &&
                   plant.labels.length > 0 && <LabelBadge label={plant.label} />}
-                <div className="text-black font-Outfit text-lg flex flex-col gap-0 px-2">
-                  <span className="">{plant.family}</span>
-                  <span>{plant.name}</span>
+                <div className="text-black font-Outfit text-base sm:text-lg leading-tight flex wrap-break-word gap-.5 px-3">
+                  <span className="">
+                    {plant.family} {plant.name}
+                  </span>
                 </div>
-                <div className="grid grid-cols-2 place-items-center w-full px-2">
-                  <span className="text-black font-Manrope text-xl justify-self-start">
+                <div className="grid grid-cols-[1fr_auto] items-center w-full gap-2 px-3">
+                  <span className="text-black font-Manrope text-2xl justify-self-start">
                     $
                     {calcPrice(plant.price, plant.discount).toLocaleString(
                       "es-AR",

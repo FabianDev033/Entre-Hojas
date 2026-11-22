@@ -162,8 +162,8 @@ export default function Checkout() {
   };
 
   return (
-    <main className="min-h-svh bg-bg-light flex flex-col gap-5 items-center">
-      <section className="w-11/12 flex flex-col gap-3 font-Manrope text-black font-light text-sm mt-3">
+    <main className="min-h-svh bg-bg-light flex w-full flex-col gap-6 items-center px-4 pb-24">
+      <section className="w-full max-w-2xl flex flex-col gap-3 font-Manrope text-black font-light text-sm mt-4">
         <form
           id="checkout-form"
           onSubmit={handleSubmit}
@@ -216,7 +216,7 @@ export default function Checkout() {
           </button>
         </form>
       </section>
-      <section className="w-11/12 flex flex-col justify-start gap-3 font-Manrope text-black font-light text-sm">
+      <section className="w-full max-w-2xl flex flex-col justify-start gap-3 font-Manrope text-black font-light text-sm">
         <hr className="border border-black/30" />
         <span className="font-Outfit font-normal text-lg">Medios de pago</span>
         <form className="px-4 flex flex-col gap-4">
@@ -273,7 +273,7 @@ export default function Checkout() {
           </label>
         </form>
       </section>
-      <section className="w-11/12 font-Manrope font-light text-black text-sm flex flex-col gap-3">
+      <section className="w-full max-w-2xl font-Manrope font-light text-black text-sm flex flex-col gap-3">
         <hr className="border border-black/30" />
         <span className="font-Outfit font-normal text-lg">
           Resumen de compra
@@ -324,7 +324,7 @@ export default function Checkout() {
           <span className="text-primary-dark">Gratis</span>
         </div>
       </section>
-      <section className="w-11/12 flex flex-col gap-3 justify-between text-black text-xl">
+      <section className="w-full max-w-2xl flex flex-col gap-3 justify-between text-black text-xl">
         <hr className="border border-black/30" />
         <div className="flex justify-between">
           <span className="font-Outfit font-normal">Total</span>
@@ -341,7 +341,7 @@ export default function Checkout() {
           </span>
         </div>
       </section>
-      <section className="w-full h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-0 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+      <section className="w-full min-h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-16 z-30 px-4 pb-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
         {submitError && (
           <span className="w-11/12 text-center font-Manrope text-sm text-red-700">
             {submitError}
@@ -351,7 +351,7 @@ export default function Checkout() {
           form="checkout-form"
           type="submit"
           disabled={isSubmitting || isLoadingPlants || !!loadError}
-          className="w-11/12 py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
+          className="w-full max-w-2xl py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
           {isSubmitting ? "Creando orden..." : "Ordenar y finalizar"}
         </button>
       </section>
