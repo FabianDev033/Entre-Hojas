@@ -42,11 +42,10 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-bg-light w-full flex flex-col items-center text-white">
+    <main className="w-full flex flex-col items-center text-white">
       <section
         aria-label="Promoción destacada"
         className="relative isolate w-full h-70 overflow-hidden transparent md:aspect-[16/7]">
-        <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-64 w-full absolute z-0"></div>
         <h1 className="absolute left-[7%] top-[14%] z-10 font-Outfit text-4xl font-bold leading-[0.9] text-primary-darkest">
           <span className="block pb-1">¡Ofertón</span>
           <span className="block">verde!</span>

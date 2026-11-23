@@ -85,7 +85,7 @@ export default function Header() {
         ${isCheckout ? "flex items-center" : "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center"}
         px-3 py-2 sm:px-6 w-full min-h-12 pt-2
         ${header.showShadow ? "shadow-md border-b border-black/30" : ""}
-        ${isOrder ? "bg-bg-order" : "bg-primary"}
+        ${pathname === "/" ? "bg-transparent" : isOrder ? "bg-bg-order" : "bg-primary"}
         relative z-20
       `}>
       {header.showBackButton ? (
