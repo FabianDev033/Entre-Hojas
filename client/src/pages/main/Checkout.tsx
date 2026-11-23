@@ -77,16 +77,21 @@ export default function Checkout() {
       try {
         const responses = await Promise.all(
           items.map((item) =>
-            axios.get<CheckoutPlant>(`${API_BASE_URL}/api/plantas/${item.plantId}`, {
-              signal: controller.signal,
-            }),
+            axios.get<CheckoutPlant>(
+              `${API_BASE_URL}/api/plantas/${item.plantId}`,
+              {
+                signal: controller.signal,
+              },
+            ),
           ),
         );
         if (!controller.signal.aborted) {
           const loadedPlants = responses.map((response) => response.data);
           setPlants(loadedPlants);
           if (loadedPlants.some((plant) => !isProductAvailable(plant))) {
-            setLoadError("Uno de los productos está sin stock. Volvé al carrito para revisar tu compra.");
+            setLoadError(
+              "Uno de los productos está sin stock. Volvé al carrito para revisar tu compra.",
+            );
           }
         }
       } catch (error) {
@@ -104,7 +109,13 @@ export default function Checkout() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isSubmitting || isLoadingPlants || loadError || plants.some((plant) => !isProductAvailable(plant))) return;
+    if (
+      isSubmitting ||
+      isLoadingPlants ||
+      loadError ||
+      plants.some((plant) => !isProductAvailable(plant))
+    )
+      return;
     if (!items || !savedLocation) {
       setSubmitError("Completá tus datos y agregá una dirección de entrega.");
       return;
@@ -132,10 +143,7 @@ export default function Checkout() {
           customer: {
             nombre,
             telefono: telefono || undefined,
-            direccion: [
-              savedLocation.address,
-              savedLocation.city,
-            ]
+            direccion: [savedLocation.address, savedLocation.city]
               .filter(Boolean)
               .join(", "),
             detalleUbicacion: savedLocation.details,
@@ -341,7 +349,7 @@ export default function Checkout() {
           </span>
         </div>
       </section>
-      <section className="w-full min-h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-16 z-30 px-4 pb-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+      <section className="w-full min-h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-0 z-30 px-4 pb-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
         {submitError && (
           <span className="w-11/12 text-center font-Manrope text-sm text-red-700">
             {submitError}

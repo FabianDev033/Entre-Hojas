@@ -9,7 +9,7 @@ type HeaderConfig = {
   showSearch: boolean;
   showSearchIcon: boolean;
   showShare: boolean;
-  title?: "Carrito" | "Finaliza tu orden";
+  title?: "Carrito" | "Finaliza tu orden" | "Entre Hojas";
 };
 
 const defaultHeader: HeaderConfig = {
@@ -56,6 +56,7 @@ function getHeaderConfig(pathname: string): HeaderConfig | null {
       showSearch: false,
       showSearchIcon: false,
       showShare: false,
+      title: "Entre Hojas",
     };
   }
 
@@ -73,6 +74,7 @@ export default function Header() {
   if (!header) return null;
 
   const isCheckout = header.title === "Finaliza tu orden";
+  const isOrder = header.title === "Entre Hojas";
   const handleHomeNavigate = () => {
     navigate(pathname === "/" ? "/admin" : "/");
   };
@@ -80,23 +82,23 @@ export default function Header() {
   return (
     <div
       className={`
-        ${
-          isCheckout
-            ? "flex items-center"
-            : "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center"
-        }
-        px-3 py-2 sm:px-6 bg-primary w-full min-h-12 pt-2
+        ${isCheckout ? "flex items-center" : "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center"}
+        px-3 py-2 sm:px-6 w-full min-h-12 pt-2
         ${header.showShadow ? "shadow-md border-b border-black/30" : ""}
+        ${isOrder ? "bg-bg-order" : "bg-primary"}
         relative z-20
       `}>
       {header.showBackButton ? (
-        <div
+        <button
+          type="button"
+          aria-label="Volver"
           className={`
-            flex items-center gap-4 pl-2 h-10 cursor-pointer
+            flex h-10 items-center gap-4 rounded-full
             ${isCheckout ? "w-full" : ""}
+            ${isOrder ? "w-full px-3 py-2 justify-center bg-[#fff]" : ""}
           `}
           onClick={() => navigate(-1)}>
-          <Arrow className="w-4 h-4" />
+          <Arrow className="size-4" />
 
           {header.title === "Carrito" && (
             <div className="font-Outfit font-normal text-black text-lg">
@@ -109,7 +111,7 @@ export default function Header() {
               Finaliza tu orden
             </div>
           )}
-        </div>
+        </button>
       ) : (
         <img
           src={Logo}
@@ -131,6 +133,12 @@ export default function Header() {
 
           {header.showShare && <Share className="w-5 h-5 cursor-pointer" />}
         </div>
+      )}
+
+      {isOrder && (
+        <h1 className="absolute left-1/2 -translate-x-1/2 font-Outfit text-xl font-semibold text-primary-darkest sm:text-2xl">
+          Entre Hojas
+        </h1>
       )}
     </div>
   );

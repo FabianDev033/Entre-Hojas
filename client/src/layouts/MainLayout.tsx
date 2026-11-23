@@ -4,6 +4,7 @@ import { ScrollToTop } from "../Components/mainLayout";
 export default function MainLayout() {
   const location = useLocation();
   const isCartPage = location.pathname === "/cart";
+  const isCheckoutPage = location.pathname === "/checkout";
 
   return (
     <>
@@ -14,7 +15,7 @@ export default function MainLayout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      {!isCartPage && <Footer />}
+      {!isCartPage && !isCheckoutPage && <Footer />}
     </div>
     </>
   );
