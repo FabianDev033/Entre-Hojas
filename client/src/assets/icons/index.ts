@@ -46,3 +46,6 @@ export { default as NoStock } from "./NoStock";
 export { default as Pen } from "./Pen";
 export { default as Calendar } from "./Calendar";
 export { default as MiniAdd } from "./MiniAdd";
+export { default as LeafCategory } from "./LeafCategory";
+export { default as LeafBg } from "./LeafBg";
+export { default as AcceptMini } from "./AcceptMini";

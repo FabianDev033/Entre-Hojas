@@ -1,8 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Cart, HourGlass, User2 } from "../../assets/icons";
-import {useNavigate} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Cart, LeafCategory, AcceptMini } from "../../assets/icons";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -19,7 +18,6 @@ interface OrderData {
   direccion: string | null;
   cliente: {
     nombre: string;
-    apellido: string;
     telefono: string | null;
   };
   items: OrderItem[];
@@ -31,13 +29,11 @@ function formatMoney(value: number) {
 
 export default function Order() {
   const { orderId } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState<OrderData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const displayAddress = order?.direccion
-  ? `${order.direccion.split(",")[0].trim()}, ${order.direccion.split(",").at(-1)?.trim()}`
-  : "";
-  const navigate = useNavigate();
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -60,76 +56,126 @@ export default function Order() {
       }
     };
 
-    if (!orderId) {
-      setError("El identificador de la orden no es válido.");
-      setIsLoading(false);
-      return () => controller.abort();
-    }
+    if (!orderId) return () => controller.abort();
 
     void loadOrder();
     return () => controller.abort();
   }, [orderId]);
 
-  if (isLoading) {
-    return <main className="min-h-svh bg-bg-light p-6 font-Manrope text-black">Cargando orden...</main>;
+  if (!orderId || isLoading || error || !order) {
+    return (
+      <main className="flex min-h-[calc(100svh-3rem)] items-center justify-center bg-[color-mix(in_srgb,var(--pri1)_30%,var(--bg1))] px-4 font-Manrope text-black">
+        <p
+          role={!orderId || error ? "alert" : "status"}
+          className={error || !orderId ? "text-cancel" : ""}>
+          {!orderId
+            ? "El identificador de la orden no es válido."
+            : isLoading
+              ? "Cargando orden..."
+              : (error ?? "No se encontró la orden.")}
+        </p>
+      </main>
+    );
   }
 
-  if (error || !order) {
-    return <main className="min-h-svh bg-bg-light p-6 font-Manrope text-red-700">{error ?? "No se encontró la orden."}</main>;
-  }
+  const displayAddress = order.direccion
+    ? `${order.direccion.split(",")[0].trim()}, ${order.direccion.split(",").at(-1)?.trim()}`
+    : null;
 
   return (
-    <main className="min-h-[90svh] bg-bg-light relative flex flex-col gap-8 justify-start items-center px-4 pb-24">
-      <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-63 w-full absolute z-0" />
-      <section className="w-full max-w-2xl flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
-        <h2 className="font-semibold text-3xl">ORDEN CONFIRMADA</h2>
-        <span className="text-lg">Muchas gracias por confiar en Entre Hojas</span>
-      </section>
-      <section className="w-full max-w-2xl flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
-        <div className="flex relative items-center gap-2 font-Outfit font-normal text-lg self-start">
-          <HourGlass className="h-6 w-6" />
-          <span>Pedido en proceso</span>
-        </div>
-      </section>
-      <section className="w-full max-w-2xl flex flex-col gap-4 justify-center items-center text-black text-sm font-Manrope font-light relative z-10">
-        <div className="flex relative items-center gap-2 font-Outfit font-normal text-lg self-start">
-          <Cart className="h-5 w-5" />
-          <span>Tu pedido</span>
-          <span className="text-black/60 font-Manrope font-light">#{orderId}</span>
-        </div>
-        <div className="w-10/12">
-          {order.items.map((item) => (
-            <div key={item.plantId} className="flex justify-between gap-4 w-full">
-              <span>{item.cantidad} x {[item.familia, item.nombre].filter(Boolean).join(" ")}</span>
-              <span>{formatMoney(item.subtotal)}</span>
-            </div>
-          ))}
-          <div className="flex justify-between border-t border-black/30 pt-3 font-Outfit font-normal text-lg w-full">
-            <span>Total</span>
-            <span>{formatMoney(order.total)}</span>
+    <main className="relative flex min-h-[calc(100svh-3rem)] flex-col items-center bg-bg-order px-4 pb-24 pt-6 text-black sm:px-6 sm:pt-8">
+      <article className="relative z-10 w-full max-w-2xl overflow-visible rounded-3xl bg-[#fff] shadow-md">
+        <section className="flex flex-col items-center px-5 pb-6 pt-6 text-center sm:px-7 sm:pt-8">
+          <div className="flex size-14 items-center justify-center rounded-full bg-primary-dark text-white">
+            <AcceptMini />
           </div>
-        </div>
-      </section>
-      <section className="w-full max-w-2xl flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
-        <div className="flex relative items-center gap-2 font-Outfit font-normal text-lg self-start">
-          <User2 className="h-6 w-6 text-black" />
-          <span>Tus datos de contacto</span>
-        </div>
-        <div className="w-10/12 flex flex-col gap-2">
-          <p className="text-left">Nombre: {order.cliente.nombre}</p>
-          {order.cliente.telefono && <p className="text-left">Teléfono: {order.cliente.telefono}</p>}
-          {order.direccion && <p className="text-left">Dirección: {displayAddress}</p>}
-        </div>
-      </section>
-      <section className='w-full min-h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-16 z-30 px-4 pb-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]'>
-            
-            <button 
-            className="w-full max-w-2xl py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer"
-            onClick={() => {navigate("/")}}
-            >
-                Seguir comprando
-            </button>
+          <h1 className="mt-3 font-Outfit text-2xl font-semibold text-primary-darkest sm:text-3xl">
+            ¡Orden confirmada!
+          </h1>
+          <p className="mt-2 font-Manrope text-sm text-primary-darkest/80 sm:text-base">
+            Muchas gracias por confiar en Entre Hojas
+          </p>
         </section>
+
+        <div className="relative border-t-4 border border-bg-order before:absolute before:-left-3 before:-top-3 before:size-6 before:rounded-full before:bg-bg-order after:absolute after:-right-3 after:-top-3 after:size-6 after:rounded-full after:bg-bg-order" />
+
+        <section
+          aria-labelledby="order-summary"
+          className="px-5 py-5 sm:px-7 sm:py-6">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-full bg-primary/20 text-primary-dark">
+              <Cart aria-hidden="true" className="size-5" />
+            </span>
+            <h2
+              id="order-summary"
+              className="font-Outfit text-lg font-semibold text-primary-darkest sm:text-xl">
+              Tu pedido
+            </h2>
+            <span className="ml-auto rounded-full bg-primary/20 px-3 py-1 font-Manrope font-semibold text-primary-dark">
+              #{orderId}
+            </span>
+          </div>
+
+          <ul className="divide-y divide-bg-darker">
+            {order.items.map((item) => (
+              <li
+                key={item.plantId}
+                className="flex items-center gap-3 py-3 first:pt-0">
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/25 text-primary-dark">
+                  <LeafCategory aria-hidden="true" className="size-8" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-Manrope text-sm font-medium leading-snug text-primary-darkest sm:text-base">
+                    {[item.familia, item.nombre].filter(Boolean).join(" ")}
+                  </p>
+                  <p className="font-Manrope text-sm text-primary-darkest/70">
+                    {item.cantidad}{" "}
+                    {item.cantidad === 1 ? "unidad" : "unidades"}
+                  </p>
+                </div>
+                <p className="shrink-0 font-Outfit text-lg font-semibold text-primary-darkest sm:text-base">
+                  {formatMoney(item.subtotal)}
+                </p>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-2 flex items-center justify-between border-t border-bg-darker pt-3 font-Outfit font-semibold text-primary-darkest">
+            <span className="text-lg">Total</span>
+            <span className="text-xl sm:text-2xl">
+              {formatMoney(order.total)}
+            </span>
+          </div>
+        </section>
+
+        <section
+          aria-labelledby="contact-details"
+          className="border-t-4 border-dashed border-bg-order px-5 py-5 sm:px-7 sm:py-6">
+          <h2
+            id="contact-details"
+            className="mb-2 font-Outfit text-sm font-semibold uppercase text-primary-darkest/75">
+            Tus datos de contacto
+          </h2>
+          <div className="space-y-1.5 font-Manrope text-sm text-primary-darkest sm:text-base">
+            <p>Nombre: {order.cliente.nombre}</p>
+            {order.cliente.telefono && (
+              <p>Teléfono: {order.cliente.telefono}</p>
+            )}
+            {displayAddress && (
+              <p className="break-words">Dirección: {displayAddress}</p>
+            )}
+          </div>
+        </section>
+      </article>
+
+      <div className="mt-6 w-full max-w-2xl px-1">
+        <button
+          type="button"
+          className="mx-auto block w-full max-w-2xl rounded-full bg-primary-dark px-6 py-3 font-Manrope text-base font-normal text-white transition-colors hover:bg-primary-darkest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-darkest"
+          onClick={() => navigate("/")}>
+          Seguir comprando
+        </button>
+      </div>
     </main>
   );
 }

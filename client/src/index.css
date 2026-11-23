@@ -7,6 +7,7 @@
   --bg2: #f2ebe3;
   --bg3: #eee6db;
   --bg4: #d8cab8;
+  --bg5: #dce7d3;
 
   --pri1: #a8c09a;
   --pri2: #4a6f44;
@@ -40,7 +41,7 @@
   --color-bg-light: var(--bg1);
   --color-bg-dark: var(--bg3);
   --color-bg-darker: var(--bg4);
-
+  --color-bg-order: var(--bg5);
   --color-black: var(--black);
   --color-white: var(--white);
 

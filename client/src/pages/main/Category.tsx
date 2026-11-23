@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Plant } from "../../Components/mainLayout/ProductList";
+import { LeafCategory } from "../../assets/icons";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -14,30 +15,6 @@ const families = [
   { name: "Potus", color: "bg-primary/25" },
   { name: "Singonio", color: "bg-secondary/25" },
 ];
-
-function LeafMark({ className }: { className: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 32 32"
-      fill="none"
-      className={className}
-    >
-      <path
-        d="M26.5 5.5C17 6 8.2 9.4 7 17.4c-.6 4.1 2.2 7.2 6.1 7.1C22.1 24.3 26.2 14.8 26.5 5.5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5.5 27 21 11.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 export default function Category() {
   const navigate = useNavigate();
@@ -108,7 +85,7 @@ export default function Category() {
                 className={`flex min-h-28 flex-col items-start justify-end gap-0.5 rounded-2xl ${color} p-3 text-left transition hover:brightness-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-alt-dark sm:min-h-32 sm:p-4`}
               >
                 <span className="mb-auto self-end">
-                  <LeafMark className="h-6 w-6 text-black/55" />
+                  <LeafCategory aria-hidden="true" className="h-6 w-6 text-black/55" />
                 </span>
                 <span className="text-lg font-semibold leading-tight sm:text-xl">
                   {name}
