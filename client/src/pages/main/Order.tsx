@@ -79,19 +79,19 @@ export default function Order() {
   }
 
   return (
-    <main className="min-h-[90svh] bg-bg-light relative flex flex-col gap-10 justify-start items-center">
-      <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-63 w-screen absolute z-0" />
-      <section className="w-full flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
+    <main className="min-h-[90svh] bg-bg-light relative flex flex-col gap-8 justify-start items-center px-4 pb-24">
+      <div className="bg-[linear-gradient(to_bottom,#A8C09A_0%,#A8C09A_40%,#F5F1E8_100%)] h-63 w-full absolute z-0" />
+      <section className="w-full max-w-2xl flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
         <h2 className="font-semibold text-3xl">ORDEN CONFIRMADA</h2>
         <span className="text-lg">Muchas gracias por confiar en Entre Hojas</span>
       </section>
-      <section className="w-full px-1 flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
+      <section className="w-full max-w-2xl flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
         <div className="flex relative items-center gap-2 font-Outfit font-normal text-lg self-start">
           <HourGlass className="h-6 w-6" />
           <span>Pedido en proceso</span>
         </div>
       </section>
-      <section className="w-full px-1 flex flex-col gap-4 justify-center items-center text-black text-sm font-Manrope font-light relative z-10">
+      <section className="w-full max-w-2xl flex flex-col gap-4 justify-center items-center text-black text-sm font-Manrope font-light relative z-10">
         <div className="flex relative items-center gap-2 font-Outfit font-normal text-lg self-start">
           <Cart className="h-5 w-5" />
           <span>Tu pedido</span>
@@ -110,7 +110,7 @@ export default function Order() {
           </div>
         </div>
       </section>
-      <section className="w-full px-1 flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
+      <section className="w-full max-w-2xl flex flex-col justify-center items-center gap-3 text-black font-Outfit font-light z-10 relative text-center">
         <div className="flex relative items-center gap-2 font-Outfit font-normal text-lg self-start">
           <User2 className="h-6 w-6 text-black" />
           <span>Tus datos de contacto</span>
@@ -121,10 +121,10 @@ export default function Order() {
           {order.direccion && <p className="text-left">Dirección: {displayAddress}</p>}
         </div>
       </section>
-      <section className='w-full h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-0 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]'>
+      <section className='w-full min-h-22 flex flex-col gap-3 justify-between items-center text-black text-xl font-Outfit font-light bg-bg-light fixed bottom-16 z-30 px-4 pb-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]'>
             
             <button 
-            className="w-11/12 py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer"
+            className="w-full max-w-2xl py-2 mt-3 bg-primary-dark/80 text-bg-light rounded-md shadow-md cursor-pointer"
             onClick={() => {navigate("/")}}
             >
                 Seguir comprando

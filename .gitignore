@@ -40,3 +40,9 @@ Thumbs.db
 *.tsbuildinfo
 client/src/.env
 api/uploads/
+.agents/skills/backend-feature/SKILL.md
+.agents/skills/incremental-implementation/SKILL.md
+.agents/skills/repo-discovery/SKILL.md
+.agents/skills/responsive-interface/SKILL.md
+.agents/skills/systematic-debugging/SKILL.md
+AGENTS.md
