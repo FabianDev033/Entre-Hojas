@@ -62,7 +62,7 @@ export default function Home() {
           <span className="font-Outfit text-3xl font-medium leading-none text-primary-darkest">
             $18.000
           </span>
-          <span className="whitespace-nowrap font-outfit font-normal text-xm text-black/60 line-through">
+          <span className="whitespace-nowrap font-Manrope font-normal text-sm text-black/60 line-through">
             $20.000
           </span>
         </div>
